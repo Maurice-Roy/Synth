@@ -142,7 +142,6 @@ class App extends Component {
 
   componentDidMount = () => {
     //initial variables
-    // this.props.currentPatchSettings.currentOctave = 4
     this.AudioContext = window.AudioContext || window.webkitAudioContext
     this.audioContext = new this.AudioContext()
     this.masterGainNode = null;
@@ -150,6 +149,7 @@ class App extends Component {
     this.volumeControl = this.refs.masterGain
     this.noteFreq = null;
 
+    //initial fetch for patches from the backend
     this.props.fetchAllPatches()
 
     //keyboard keys => musical notes
@@ -190,23 +190,22 @@ class App extends Component {
     window.addEventListener("keydown", this.keyPressed.bind(this), false)
     window.addEventListener("keyup", this.keyReleased.bind(this), false)
 
+    // create and connect the master gain node
     this.masterGainNode = this.audioContext.createGain();
     this.masterGainNode.connect(this.audioContext.destination);
     this.masterGainNode.gain.value = this.volumeControl.value;
-
-    // for (let i=0; i<9; i++) {
-    //     this.activeOscillators[i] = [];
-    // }
   }
 
-  componentWillReceiveProps = (nextProps) => {
-    //does this turn into a massive switch statement for each parameter?
-    this.masterGainNode.gain.value = nextProps.currentPatchSettings.masterGain
-  }
+
+  //FIXME - this is where the master gain slider is mapped to the state
+  // componentWillReceiveProps = (nextProps) => {
+  //   //does this turn into a massive switch statement for each parameter?
+  //   this.masterGainNode.gain.value = nextProps.currentPatchSettings.masterGain
+  // }
 
   keyPressed = (event) => {
     let key = (event.detail || event.which).toString()
-    
+
     if (this.controlsArray.includes(key)) { //if key is [ or ] or \
       switch (key) {
         case '219':
@@ -267,15 +266,16 @@ class App extends Component {
   playNote = (freq) => {
     let osc = this.audioContext.createOscillator();
     osc.connect(this.masterGainNode);
-
-    // let type = this.wavePicker.options[this.wavePicker.selectedIndex].value;
-    // osc.type = type;
     osc.type = this.props.currentPatchSettings.selectedWaveform
-
     osc.frequency.value = freq;
     osc.start();
-    //
     return osc;
+  }
+
+  listPatches = () => {
+    return this.props.allPatches.map((patch) => {
+      return (<option value={patch.id} key={patch.id} id={patch.id}>{patch.name}</option>)
+    })
   }
 
   render() {
@@ -285,7 +285,17 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">WELCOME TO HELL!</h1>
         </header>
-        <div class="master-gain-container">
+        <div className="patch-controls">
+          <span>Patches: </span>
+          <select name="patches" id="patchSelect" defaultValue="Default Patch" onChange={(event) => {
+            let selectedPatch = this.props.allPatches.find((patch) => patch.id === parseInt(event.target[event.target.selectedIndex].value))
+            this.props.loadPatch(selectedPatch)
+          }}>
+            <option value="Default Patch">Default</option>
+            {this.listPatches()}
+          </select>
+        </div>
+        <div className="master-gain-container">
           <span>Volume: </span>
           <input id="masterGain" type="range" min="0.0" max="1.0" step="0.01"
               defaultValue="0.5" list="volumes" name="volume" ref="masterGain"
@@ -295,7 +305,7 @@ class App extends Component {
             <option value="1.0" label="100%"/>
           </datalist>
         </div>
-        <div class="waveform-select-container">
+        <div className="waveform-select-container">
           <span>Waveform: </span>
           <select name="waveform" ref="waveformSelect" id="selectedWaveform" onChange={(event) => this.props.updatePatch(event.target.id, event.target.value)}>
             <option value="sine">Sine</option>

@@ -18,6 +18,7 @@ export const fetchAllPatches = () => {
 }
 
 export const loadPatch = (patch) => {
+  console.log('patch in loadPatch action: ', patch);
   return {
     type: LOAD_PATCH,
     payload: patch

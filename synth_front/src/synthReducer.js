@@ -18,7 +18,6 @@ export default function synthReducer (state = defaultState, action) {
       }
       break;
     case 'LOAD_PATCH':
-      //FIXME return the updated state here
       console.log('LOAD_PATCH: ', action.payload);
       return {
         ...state,
@@ -31,8 +30,6 @@ export default function synthReducer (state = defaultState, action) {
       }
       break;
     case 'UPDATE_PATCH':
-      //update the state of the synth parameter passed in
-      console.log('UPDATE_PATCH: ', action.payload);
       let newPatchSettings = {...state.currentPatchSettings}
       newPatchSettings[action.payload.synthParameter] = action.payload.data
       return {
