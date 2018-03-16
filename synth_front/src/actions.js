@@ -24,17 +24,17 @@ export const loadPatch = (patch) => {
   }
 }
 
-export const updatePatch = (data) => {
+export const updatePatch = (synthParameter, data) => {
   return {
     type: UPDATE_PATCH,
-    payload: data
+    payload: {synthParameter, data}
   }
 }
 
-export const createNewPatch = (currentPatchState) => {
+export const createNewPatch = (currentPatchSettings) => {
   return {
     type: CREATE_NEW_PATCH,
-    payload: currentPatchState
+    payload: currentPatchSettings
   }
 }
 

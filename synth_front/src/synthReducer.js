@@ -1,5 +1,5 @@
 const defaultState = {
-  currentPatchState: {
+  currentPatchSettings: {
     name: 'Default Patch',
     selectedWaveform: 'square',
     masterGain: 0.5,
@@ -22,7 +22,7 @@ export default function synthReducer (state = defaultState, action) {
       console.log('LOAD_PATCH: ', action.payload);
       return {
         ...state,
-        currentPatchState: {
+        currentPatchSettings: {
           name: action.payload.name,
           selectedWaveform: action.payload.selected_waveform,
           masterGain: action.payload.master_gain,
@@ -31,10 +31,14 @@ export default function synthReducer (state = defaultState, action) {
       }
       break;
     case 'UPDATE_PATCH':
-      //FIXME return the updated state here
-      //update the state of each synth parameter
+      //update the state of the synth parameter passed in
       console.log('UPDATE_PATCH: ', action.payload);
-      return state
+      let newPatchSettings = {...state.currentPatchSettings}
+      newPatchSettings[action.payload.synthParameter] = action.payload.data
+      return {
+        ...state,
+        currentPatchSettings: newPatchSettings
+      }
       break;
     case 'CREATE_NEW_PATCH':
       //FIXME return the updated state here

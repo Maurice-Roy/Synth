@@ -141,11 +141,10 @@ class App extends Component {
   }
 
   componentDidMount = () => {
-    //initial variables & hackjob state:
-    this.currentOctave = 4
+    //initial variables
+    // this.props.currentPatchSettings.currentOctave = 4
     this.AudioContext = window.AudioContext || window.webkitAudioContext
     this.audioContext = new this.AudioContext()
-    // this.activeOscillators = {};
     this.masterGainNode = null;
     this.wavePicker = this.refs.waveformSelect
     this.volumeControl = this.refs.masterGain
@@ -200,75 +199,64 @@ class App extends Component {
     // }
   }
 
+  componentWillReceiveProps = (nextProps) => {
+    //does this turn into a massive switch statement for each parameter?
+    this.masterGainNode.gain.value = nextProps.currentPatchSettings.masterGain
+  }
+
   keyPressed = (event) => {
     let key = (event.detail || event.which).toString()
+    
     if (this.controlsArray.includes(key)) { //if key is [ or ] or \
       switch (key) {
         case '219':
-          if (this.currentOctave > 0) {
-            this.currentOctave -= 1
+          if (this.props.currentPatchSettings.currentOctave > 0) {
+            let newOctave = this.props.currentPatchSettings.currentOctave -= 1
+            this.props.updatePatch('currentOctave', newOctave)
           }
           break;
         case '221':
-          if (this.currentOctave < 7) {
-            this.currentOctave += 1
+          if (this.props.currentPatchSettings.currentOctave < 7) {
+            let newOctave = this.props.currentPatchSettings.currentOctave += 1
+            this.props.updatePatch('currentOctave', newOctave)
           }
           break;
         case '220':
+          //toggle chord mode
           break;
       }
-
-
-      //toggle chord mode
     } else if (Object.keys(this.noteKeyboardAssociations).includes(key)) { // if key is a note - octave 1
       let note = this.noteKeyboardAssociations[key]
-      let frequency = this.noteFreq[this.currentOctave][note]
+      let frequency = this.noteFreq[this.props.currentPatchSettings.currentOctave][note]
       if (!this.props.activeOscillators[frequency]) { //if this note isnt playing, play it
-        //call addActiveOscillator FIXME
-
         this.props.addActiveOscillator(frequency, this.playNote(frequency))
-        // console.log('activeOscillators:',this.props.activeOscillators);
-
-        // this.activeOscillators[this.currentOctave][note] = this.playNote(frequency)
       }
     } else if (Object.keys(this.noteKeyboardAssociations2ndOctave).includes(key)) { // if key is a note - octave 2
       let note = this.noteKeyboardAssociations2ndOctave[key]
-      let frequency = this.noteFreq[this.currentOctave + 1][note]
+      let frequency = this.noteFreq[this.props.currentPatchSettings.currentOctave + 1][note]
       if (!this.props.activeOscillators[frequency]) { //if this note isnt playing, play it
-        //call addActiveOscillator FIXME
-
         this.props.addActiveOscillator(frequency, this.playNote(frequency))
-        // console.log('activeOscillators:',this.props.activeOscillators);
-
-        // this.activeOscillators[this.currentOctave + 1][note] = this.playNote(frequency)
       }
     }
   }
 
   keyReleased = (event) => {
-
     let key = (event.detail || event.which).toString()
 
     if (this.controlsArray.includes(key)) {
       //if key is [ or ] or \
-    } else if (Object.keys(this.noteKeyboardAssociations).includes(key)) {
-      //if key is a note
-      //octave 1
+    } else if (Object.keys(this.noteKeyboardAssociations).includes(key)) { // if key is a note - octave 1
       let note = this.noteKeyboardAssociations[key]
-      let frequency = this.noteFreq[this.currentOctave][note]
-      if (this.props.activeOscillators[frequency]) {
-        //if this note is playing, stop it
+      let frequency = this.noteFreq[this.props.currentPatchSettings.currentOctave][note]
+      if (this.props.activeOscillators[frequency]) { //if this note is playing, stop it
         //also remove from activeOscillators array
         this.props.activeOscillators[frequency].stop()
         this.props.removeActiveOscillator(frequency)
       }
-    } else if (Object.keys(this.noteKeyboardAssociations2ndOctave).includes(key)) {
-      //if key is a note
-      //octave 2
+    } else if (Object.keys(this.noteKeyboardAssociations2ndOctave).includes(key)) { // if key is a note - octave 2
       let note = this.noteKeyboardAssociations2ndOctave[key]
-      let frequency = this.noteFreq[this.currentOctave + 1][note]
-      if (this.props.activeOscillators[frequency]) {
-        //if this note is playing, stop it
+      let frequency = this.noteFreq[this.props.currentPatchSettings.currentOctave + 1][note]
+      if (this.props.activeOscillators[frequency]) { //if this note is playing, stop it
         //also remove from activeOscillators array
         this.props.activeOscillators[frequency].stop()
         this.props.removeActiveOscillator(frequency)
@@ -280,19 +268,14 @@ class App extends Component {
     let osc = this.audioContext.createOscillator();
     osc.connect(this.masterGainNode);
 
-    let type = this.wavePicker.options[this.wavePicker.selectedIndex].value;
-
-    osc.type = type;
+    // let type = this.wavePicker.options[this.wavePicker.selectedIndex].value;
+    // osc.type = type;
+    osc.type = this.props.currentPatchSettings.selectedWaveform
 
     osc.frequency.value = freq;
     osc.start();
     //
     return osc;
-  }
-
-  changeVolume = (event) => {
-    //call update patch here
-    this.masterGainNode.gain.value = this.volumeControl.value
   }
 
   render() {
@@ -304,9 +287,9 @@ class App extends Component {
         </header>
         <div class="master-gain-container">
           <span>Volume: </span>
-          <input type="range" min="0.0" max="1.0" step="0.01"
+          <input id="masterGain" type="range" min="0.0" max="1.0" step="0.01"
               defaultValue="0.5" list="volumes" name="volume" ref="masterGain"
-            onChange={this.changeVolume}/>
+            onChange={(event) => this.props.updatePatch(event.target.id, event.target.value)}/>
           <datalist id="volumes">
             <option value="0.0" label="Mute"/>
             <option value="1.0" label="100%"/>
@@ -314,15 +297,15 @@ class App extends Component {
         </div>
         <div class="waveform-select-container">
           <span>Waveform: </span>
-          <select name="waveform" ref="waveformSelect">
+          <select name="waveform" ref="waveformSelect" id="selectedWaveform" onChange={(event) => this.props.updatePatch(event.target.id, event.target.value)}>
             <option value="sine">Sine</option>
             <option value="square" selected>Square</option>
             <option value="sawtooth">Sawtooth</option>
             <option value="triangle">Triangle</option>
           </select>
         </div>
-        <img src={topKeyboard} alt="" className="keyboard_graphic"/>
-        <img src={bottomKeyboard} alt="" className="keyboard_graphic"/>
+        {/* <img src={topKeyboard} alt="" className="keyboard_graphic"/> */}
+        {/* <img src={bottomKeyboard} alt="" className="keyboard_graphic"/> */}
       </div>
     );
   }
