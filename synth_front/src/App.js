@@ -1,6 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
-import { updatePatch, fetchPatches } from './actions'
+import { fetchAllPatches,
+        loadPatch,
+        updatePatch,
+        createNewPatch,
+        deletePatch,
+        addActiveOscillator,
+        removeActiveOscillator
+       } from './actions'
 import logo from './scull4.png';
 import topKeyboard from './top_keyboard.svg'
 import bottomKeyboard from './bottom_keyboard.svg'
@@ -138,12 +145,13 @@ class App extends Component {
     this.currentOctave = 4
     this.AudioContext = window.AudioContext || window.webkitAudioContext
     this.audioContext = new this.AudioContext()
-    this.oscList = {};
+    // this.activeOscillators = {};
     this.masterGainNode = null;
     this.wavePicker = this.refs.waveformSelect
     this.volumeControl = this.refs.masterGain
     this.noteFreq = null;
-    this.props.fetchPatches()
+
+    this.props.fetchAllPatches()
 
     //keyboard keys => musical notes
     this.controlsArray = ['219', '220', '221']
@@ -187,9 +195,9 @@ class App extends Component {
     this.masterGainNode.connect(this.audioContext.destination);
     this.masterGainNode.gain.value = this.volumeControl.value;
 
-    for (let i=0; i<9; i++) {
-        this.oscList[i] = [];
-    }
+    // for (let i=0; i<9; i++) {
+    //     this.activeOscillators[i] = [];
+    // }
   }
 
   keyPressed = (event) => {
@@ -215,14 +223,24 @@ class App extends Component {
     } else if (Object.keys(this.noteKeyboardAssociations).includes(key)) { // if key is a note - octave 1
       let note = this.noteKeyboardAssociations[key]
       let frequency = this.noteFreq[this.currentOctave][note]
-      if (!this.oscList[this.currentOctave][note]) { //if this note isnt playing, play it
-        this.oscList[this.currentOctave][note] = this.playNote(frequency)
+      if (!this.props.activeOscillators[frequency]) { //if this note isnt playing, play it
+        //call addActiveOscillator FIXME
+
+        this.props.addActiveOscillator(frequency, this.playNote(frequency))
+        // console.log('activeOscillators:',this.props.activeOscillators);
+
+        // this.activeOscillators[this.currentOctave][note] = this.playNote(frequency)
       }
     } else if (Object.keys(this.noteKeyboardAssociations2ndOctave).includes(key)) { // if key is a note - octave 2
       let note = this.noteKeyboardAssociations2ndOctave[key]
       let frequency = this.noteFreq[this.currentOctave + 1][note]
-      if (!this.oscList[this.currentOctave + 1][note]) { //if this note isnt playing, play it
-        this.oscList[this.currentOctave + 1][note] = this.playNote(frequency)
+      if (!this.props.activeOscillators[frequency]) { //if this note isnt playing, play it
+        //call addActiveOscillator FIXME
+
+        this.props.addActiveOscillator(frequency, this.playNote(frequency))
+        // console.log('activeOscillators:',this.props.activeOscillators);
+
+        // this.activeOscillators[this.currentOctave + 1][note] = this.playNote(frequency)
       }
     }
   }
@@ -236,25 +254,24 @@ class App extends Component {
     } else if (Object.keys(this.noteKeyboardAssociations).includes(key)) {
       //if key is a note
       //octave 1
-
       let note = this.noteKeyboardAssociations[key]
       let frequency = this.noteFreq[this.currentOctave][note]
-      if (this.oscList[this.currentOctave][note]) {
+      if (this.props.activeOscillators[frequency]) {
         //if this note is playing, stop it
-        //also remove from oscList array
-        this.oscList[this.currentOctave][note].stop();
-        delete this.oscList[this.currentOctave][note]
+        //also remove from activeOscillators array
+        this.props.activeOscillators[frequency].stop()
+        this.props.removeActiveOscillator(frequency)
       }
     } else if (Object.keys(this.noteKeyboardAssociations2ndOctave).includes(key)) {
       //if key is a note
       //octave 2
       let note = this.noteKeyboardAssociations2ndOctave[key]
       let frequency = this.noteFreq[this.currentOctave + 1][note]
-      if (this.oscList[this.currentOctave + 1][note]) {
+      if (this.props.activeOscillators[frequency]) {
         //if this note is playing, stop it
-        //also remove from oscList array
-        this.oscList[this.currentOctave + 1][note].stop();
-        delete this.oscList[this.currentOctave + 1][note]
+        //also remove from activeOscillators array
+        this.props.activeOscillators[frequency].stop()
+        this.props.removeActiveOscillator(frequency)
       }
     }
   }
@@ -263,9 +280,7 @@ class App extends Component {
     let osc = this.audioContext.createOscillator();
     osc.connect(this.masterGainNode);
 
-    // let type = 'square'
     let type = this.wavePicker.options[this.wavePicker.selectedIndex].value;
-
 
     osc.type = type;
 
@@ -276,12 +291,11 @@ class App extends Component {
   }
 
   changeVolume = (event) => {
+    //call update patch here
     this.masterGainNode.gain.value = this.volumeControl.value
   }
 
   render() {
-    console.log('state as props after fetch:', this.props);
-
     return (
       <div className="App">
         <header className="App-header">
@@ -318,4 +332,4 @@ const mapStateToProps = (state) => {
   return {...state}
 }
 
-export default connect(mapStateToProps, { updatePatch, fetchPatches })(App)
+export default connect(mapStateToProps, { fetchAllPatches, loadPatch, updatePatch, createNewPatch, deletePatch, addActiveOscillator, removeActiveOscillator })(App)
