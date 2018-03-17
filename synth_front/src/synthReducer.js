@@ -1,5 +1,6 @@
 const defaultState = {
   currentPatchSettings: {
+    id: null,
     name: 'Default Patch',
     selectedWaveform: 'square',
     masterGain: 0.5,
@@ -19,15 +20,30 @@ export default function synthReducer (state = defaultState, action) {
       break;
     case 'LOAD_PATCH':
       console.log('LOAD_PATCH: ', action.payload);
+      // if (action.payload.id !== null) {
       return {
         ...state,
         currentPatchSettings: {
+          id: action.payload.id,
           name: action.payload.name,
           selectedWaveform: action.payload.selected_waveform,
           masterGain: action.payload.master_gain,
           currentOctave: action.payload.current_octave
         }
       }
+      // } else { //default patch
+      //   return {
+      //     ...state,
+      //     currentPatchSettings: {
+      //       id: null,
+      //       name: action.payload.name,
+      //       selectedWaveform: action.payload.selected_waveform,
+      //       masterGain: action.payload.master_gain,
+      //       currentOctave: action.payload.current_octave
+      //     }
+      //   }
+      // }
+
       break;
     case 'UPDATE_PATCH':
       let newPatchSettings = {...state.currentPatchSettings}

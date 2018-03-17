@@ -141,6 +141,7 @@ class App extends Component {
     this.wavePicker = this.refs.waveformSelect
     this.volumeControl = this.refs.masterGain
     this.noteFreq = null;
+    this.defaultPatch = {id: null, name: 'Default Patch', selected_waveform: "square", master_gain: 0.5, current_octave: 4}
 
     //initial fetch for patches from the backend
     this.props.fetchAllPatches()
@@ -192,6 +193,7 @@ class App extends Component {
   //FIXME - this is where the master gain slider is mapped to the state
   componentWillReceiveProps = (nextProps) => {
     //does this turn into a massive switch statement for each parameter?
+    console.log(nextProps)
     this.masterGainNode.gain.value = nextProps.currentPatchSettings.masterGain
   }
 
@@ -270,6 +272,20 @@ class App extends Component {
     })
   }
 
+  savePatch = () => {
+    if (this.props.currentPatchSettings.id !== null) {
+      fetch(`http://localhost:3000/patches/${this.props.currentPatchSettings.id}`, {
+				method: "PATCH",
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(this.props.currentPatchSettings)
+			})
+			.then(res => res.json())
+      .then(() => this.props.fetchAllPatches())
+    }
+  }
+
   render() {
     return (
       <div className="App">
@@ -280,12 +296,17 @@ class App extends Component {
         <div className="patch-controls">
           <span>Patches: </span>
           <select name="patches" id="patchSelect" defaultValue="Default Patch" onChange={(event) => {
-            let selectedPatch = this.props.allPatches.find((patch) => patch.id === parseInt(event.target[event.target.selectedIndex].value))
+            let selectedPatch = this.defaultPatch
+            if (event.target[event.target.selectedIndex].value !== "Default Patch") {
+              selectedPatch = this.props.allPatches.find((patch) => patch.id === parseInt(event.target[event.target.selectedIndex].value))
+              console.log(selectedPatch);
+            }
             this.props.loadPatch(selectedPatch)
           }}>
             <option value="Default Patch">Default</option>
             {this.listPatches()}
           </select>
+          <button onClick={this.savePatch}>Save Patch</button>
         </div>
         <div className="master-gain-container">
           <span>Volume: </span>
