@@ -1,13 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
-import { fetchAllPatches,
-        loadPatch,
-        updatePatch,
-        createNewPatch,
-        deletePatch,
-        addActiveOscillator,
-        removeActiveOscillator
-       } from './actions'
+import { fetchAllPatches, loadPatch, updatePatch, createNewPatch, deletePatch, addActiveOscillator, removeActiveOscillator } from './actions'
 import logo from './scull4.png';
 import topKeyboard from './top_keyboard.svg'
 import bottomKeyboard from './bottom_keyboard.svg'
@@ -196,12 +189,11 @@ class App extends Component {
     this.masterGainNode.gain.value = this.volumeControl.value;
   }
 
-
   //FIXME - this is where the master gain slider is mapped to the state
-  // componentWillReceiveProps = (nextProps) => {
-  //   //does this turn into a massive switch statement for each parameter?
-  //   this.masterGainNode.gain.value = nextProps.currentPatchSettings.masterGain
-  // }
+  componentWillReceiveProps = (nextProps) => {
+    //does this turn into a massive switch statement for each parameter?
+    this.masterGainNode.gain.value = nextProps.currentPatchSettings.masterGain
+  }
 
   keyPressed = (event) => {
     let key = (event.detail || event.which).toString()
