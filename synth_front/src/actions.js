@@ -1,3 +1,7 @@
+// import React from 'react';
+// import { connect } from 'react-redux'
+
+
 const FETCH_ALL_PATCHES = 'FETCH_ALL_PATCHES'
 const LOAD_PATCH = 'LOAD_PATCH'
 const UPDATE_PATCH = 'UPDATE_PATCH'
@@ -33,9 +37,26 @@ export const updatePatch = (synthParameter, data) => {
 }
 
 export const createNewPatch = (currentPatchSettings) => {
-  return {
-    type: CREATE_NEW_PATCH,
-    payload: currentPatchSettings
+  let newPatchSettings = {
+    name: currentPatchSettings.name,
+    selected_waveform: currentPatchSettings.selectedWaveform,
+    master_gain: currentPatchSettings.masterGain,
+    current_octave: currentPatchSettings.currentOctave
+  }
+
+  return function(dispatch){
+    fetch('http://localhost:3000/patches',{
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(newPatchSettings)
+    })
+    .then(res => res.json())
+    .then(patch => {
+      dispatch({type: CREATE_NEW_PATCH, payload: patch})
+    })
+    // .then(() => this.props.fetchAllPatches())
   }
 }
 
@@ -61,3 +82,9 @@ export const removeActiveOscillator = (frequency) => {
     payload: {frequency}
   }
 }
+
+// const mapStateToProps = (state) => {
+//   return {...state}
+// }
+//
+// connect(mapStateToProps)

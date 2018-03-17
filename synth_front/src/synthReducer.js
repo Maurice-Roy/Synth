@@ -19,8 +19,6 @@ export default function synthReducer (state = defaultState, action) {
       }
       break;
     case 'LOAD_PATCH':
-      console.log('LOAD_PATCH: ', action.payload);
-      // if (action.payload.id !== null) {
       return {
         ...state,
         currentPatchSettings: {
@@ -31,21 +29,11 @@ export default function synthReducer (state = defaultState, action) {
           currentOctave: action.payload.current_octave
         }
       }
-      // } else { //default patch
-      //   return {
-      //     ...state,
-      //     currentPatchSettings: {
-      //       id: null,
-      //       name: action.payload.name,
-      //       selectedWaveform: action.payload.selected_waveform,
-      //       masterGain: action.payload.master_gain,
-      //       currentOctave: action.payload.current_octave
-      //     }
-      //   }
-      // }
 
       break;
     case 'UPDATE_PATCH':
+    console.log("synthParameter: ", action.payload.synthParameter)
+    console.log("data: ", action.payload.data)
       let newPatchSettings = {...state.currentPatchSettings}
       newPatchSettings[action.payload.synthParameter] = action.payload.data
       return {
@@ -56,7 +44,16 @@ export default function synthReducer (state = defaultState, action) {
     case 'CREATE_NEW_PATCH':
       //FIXME return the updated state here
       console.log('CREATE_NEW_PATCH: ', action.payload);
-      return state
+      return {
+        ...state,
+        currentPatchSettings: {
+          id: action.payload.id,
+          name: action.payload.name,
+          selectedWaveform: action.payload.selected_waveform,
+          masterGain: action.payload.master_gain,
+          currentOctave: action.payload.current_octave
+        }
+      }
       break;
     case 'DELETE_PATCH':
       //FIXME return the updated state here

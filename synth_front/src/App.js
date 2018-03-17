@@ -146,7 +146,7 @@ class App extends Component {
     //initial fetch for patches from the backend
     this.props.fetchAllPatches()
 
-    //keyboard keys => musical notes
+    //keyboard keys => musical notes & controls
     this.controlsArray = ['219', '220', '221']
     this.noteKeyboardAssociations = {
       '90': 'C',  //Z
@@ -307,6 +307,10 @@ class App extends Component {
             {this.listPatches()}
           </select>
           <button onClick={this.savePatch}>Save Patch</button>
+          <button onClick={() => {
+            this.props.createNewPatch(this.props.currentPatchSettings)
+          }}>Save Patch As</button>
+          <input id="name" type="text" defaultValue={this.props.currentPatchSettings.name} onChange={(event) => this.props.updatePatch(event.target.id, event.target.value)}/>
         </div>
         <div className="master-gain-container">
           <span>Volume: </span>

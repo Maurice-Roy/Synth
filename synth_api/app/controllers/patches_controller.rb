@@ -10,7 +10,8 @@ class PatchesController < ApplicationController
   end
 
   def create
-
+    @patch = Patch.create(name: params[:name], selected_waveform: params[:selectedWaveform], master_gain: params[:masterGain], current_octave: params[:currentOctave])
+    render json: @patch
   end
 
   def update
