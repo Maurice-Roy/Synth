@@ -193,7 +193,9 @@ class App extends Component {
   //FIXME - this is where the master gain slider is mapped to the state
   componentWillReceiveProps = (nextProps) => {
     //does this turn into a massive switch statement for each parameter?
-    console.log(nextProps)
+    this.refs.masterGain.value = nextProps.currentPatchSettings.masterGain
+    this.refs.waveformSelect.value = nextProps.currentPatchSettings.selectedWaveform
+
     this.masterGainNode.gain.value = nextProps.currentPatchSettings.masterGain
   }
 
@@ -339,6 +341,9 @@ class App extends Component {
             <option value="sawtooth">Sawtooth</option>
             <option value="triangle">Triangle</option>
           </select>
+        </div>
+        <div>
+          <span>Current Octave: {this.props.currentPatchSettings.currentOctave}</span>
         </div>
         {/* <img src={topKeyboard} alt="" className="keyboard_graphic"/> */}
         {/* <img src={bottomKeyboard} alt="" className="keyboard_graphic"/> */}
