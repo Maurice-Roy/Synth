@@ -141,7 +141,7 @@ class App extends Component {
     this.wavePicker = this.refs.waveformSelect
     this.volumeControl = this.refs.masterGain
     this.noteFreq = null;
-    this.defaultPatch = {id: null, name: 'Default Patch', selected_waveform: "square", master_gain: 0.5, current_octave: 4}
+    this.defaultPatch = {id: null, name: 'Default', selected_waveform: "square", master_gain: 0.5, current_octave: 4}
 
     //initial fetch for patches from the backend
     this.props.fetchAllPatches()
@@ -295,21 +295,22 @@ class App extends Component {
         </header>
         <div className="patch-controls">
           <span>Patches: </span>
-          <select name="patches" id="patchSelect" defaultValue="Default Patch" onChange={(event) => {
+          <select name="patches" id="patchSelect" defaultValue="Default" onChange={(event) => {
             let selectedPatch = this.defaultPatch
-            if (event.target[event.target.selectedIndex].value !== "Default Patch") {
+            if (event.target[event.target.selectedIndex].value !== "Default") {
               selectedPatch = this.props.allPatches.find((patch) => patch.id === parseInt(event.target[event.target.selectedIndex].value))
               console.log(selectedPatch);
             }
             this.props.loadPatch(selectedPatch)
           }}>
-            <option value="Default Patch">Default</option>
+            <option value="Default">Default</option>
             {this.listPatches()}
           </select>
           <button onClick={this.savePatch}>Save Patch</button>
           <button onClick={() => {
             this.props.createNewPatch(this.props.currentPatchSettings)
-          }}>Save Patch As</button>
+            setTimeout(() => this.props.fetchAllPatches(), 100)
+          }}>Save As New</button>
           <input id="name" type="text" defaultValue={this.props.currentPatchSettings.name} onChange={(event) => this.props.updatePatch(event.target.id, event.target.value)}/>
         </div>
         <div className="master-gain-container">

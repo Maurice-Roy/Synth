@@ -39,9 +39,9 @@ export const updatePatch = (synthParameter, data) => {
 export const createNewPatch = (currentPatchSettings) => {
   let newPatchSettings = {
     name: currentPatchSettings.name,
-    selected_waveform: currentPatchSettings.selectedWaveform,
-    master_gain: currentPatchSettings.masterGain,
-    current_octave: currentPatchSettings.currentOctave
+    selectedWaveform: currentPatchSettings.selectedWaveform,
+    masterGain: currentPatchSettings.masterGain,
+    currentOctave: currentPatchSettings.currentOctave
   }
 
   return function(dispatch){

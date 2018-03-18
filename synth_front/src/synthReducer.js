@@ -1,7 +1,7 @@
 const defaultState = {
   currentPatchSettings: {
     id: null,
-    name: 'Default Patch',
+    name: 'Default',
     selectedWaveform: 'square',
     masterGain: 0.5,
     currentOctave: 4
