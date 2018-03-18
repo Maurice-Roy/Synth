@@ -1,7 +1,3 @@
-// import React from 'react';
-// import { connect } from 'react-redux'
-
-
 const FETCH_ALL_PATCHES = 'FETCH_ALL_PATCHES'
 const LOAD_PATCH = 'LOAD_PATCH'
 const UPDATE_PATCH = 'UPDATE_PATCH'
@@ -56,14 +52,17 @@ export const createNewPatch = (currentPatchSettings) => {
     .then(patch => {
       dispatch({type: CREATE_NEW_PATCH, payload: patch})
     })
-    // .then(() => this.props.fetchAllPatches())
   }
 }
 
-export const deletePatch = (patch) => {
-  return {
-    type: DELETE_PATCH,
-    payload: patch
+export const deletePatch = (patchID) => {
+  return function(dispatch){
+    fetch(`http://localhost:3000/patches/${patchID}`,{
+      method: "DELETE",
+    })
+    .then(() => {
+      dispatch({type: DELETE_PATCH})
+    })
   }
 }
 
@@ -82,9 +81,3 @@ export const removeActiveOscillator = (frequency) => {
     payload: {frequency}
   }
 }
-
-// const mapStateToProps = (state) => {
-//   return {...state}
-// }
-//
-// connect(mapStateToProps)

@@ -32,8 +32,6 @@ export default function synthReducer (state = defaultState, action) {
 
       break;
     case 'UPDATE_PATCH':
-    console.log("synthParameter: ", action.payload.synthParameter)
-    console.log("data: ", action.payload.data)
       let newPatchSettings = {...state.currentPatchSettings}
       newPatchSettings[action.payload.synthParameter] = action.payload.data
       return {
@@ -42,8 +40,6 @@ export default function synthReducer (state = defaultState, action) {
       }
       break;
     case 'CREATE_NEW_PATCH':
-      //FIXME return the updated state here
-      console.log('CREATE_NEW_PATCH: ', action.payload);
       return {
         ...state,
         currentPatchSettings: {
@@ -57,8 +53,8 @@ export default function synthReducer (state = defaultState, action) {
       break;
     case 'DELETE_PATCH':
       //FIXME return the updated state here
-      console.log('DELETE_PATCH: ', action.payload);
-      return state
+      console.log('DELETE_PATCH');
+      return defaultState
       break;
     case 'ADD_ACTIVE_OSCILLATOR':
       return {

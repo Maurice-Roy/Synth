@@ -296,22 +296,30 @@ class App extends Component {
         <div className="patch-controls">
           <span>Patches: </span>
           <select name="patches" id="patchSelect" defaultValue="Default" onChange={(event) => {
-            let selectedPatch = this.defaultPatch
+            let selectedPatch
             if (event.target[event.target.selectedIndex].value !== "Default") {
               selectedPatch = this.props.allPatches.find((patch) => patch.id === parseInt(event.target[event.target.selectedIndex].value))
               console.log(selectedPatch);
+            } else {
+              selectedPatch = this.defaultPatch
             }
             this.props.loadPatch(selectedPatch)
           }}>
             <option value="Default">Default</option>
             {this.listPatches()}
           </select>
-          <button onClick={this.savePatch}>Save Patch</button>
-          <button onClick={() => {
+          <button id="saveButton" onClick={this.savePatch}>Save Patch</button>
+          <button id="saveAsNewButton" onClick={() => {
             this.props.createNewPatch(this.props.currentPatchSettings)
             setTimeout(() => this.props.fetchAllPatches(), 100)
           }}>Save As New</button>
           <input id="name" type="text" defaultValue={this.props.currentPatchSettings.name} onChange={(event) => this.props.updatePatch(event.target.id, event.target.value)}/>
+          <button id="deleteButton" onClick={() => {
+            if (this.props.currentPatchSettings.id !== null) {
+              this.props.deletePatch(this.props.currentPatchSettings.id)
+              setTimeout(() => this.props.fetchAllPatches(), 100)
+            }
+          }}>Delete</button>
         </div>
         <div className="master-gain-container">
           <span>Volume: </span>
