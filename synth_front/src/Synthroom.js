@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
-import { fetchAllPatches, loadPatch, updatePatch, createNewPatch, deletePatch, addActiveOscillator, removeActiveOscillator } from './actions'
+import { fetchAllPatches, loadPatch, updatePatch, createNewPatch, deletePatch, addActiveOscillator, removeActiveOscillator, addNewMessage } from './actions'
 import { ActionCable } from 'react-actioncable-provider'
 import logo from './scull4.png';
 import topKeyboard from './top_keyboard.svg'
@@ -8,6 +8,10 @@ import bottomKeyboard from './bottom_keyboard.svg'
 import './Synthroom.css';
 
 class Synthroom extends Component {
+
+  state = {
+    messageInput: ''
+  }
 
   createNoteTable = () => {
     let noteFreq = [];
@@ -277,7 +281,7 @@ class Synthroom extends Component {
 
   savePatch = () => {
     if (this.props.currentPatchSettings.id !== null) {
-      fetch(`http://localhost:3000/patches/${this.props.currentPatchSettings.id}`, {
+      fetch(`http://192.168.4.168:3000/patches/${this.props.currentPatchSettings.id}`, {
 				method: "PATCH",
 				headers: {
 					'Content-Type': 'application/json'
@@ -289,16 +293,41 @@ class Synthroom extends Component {
     }
   }
 
+  displayMessages = () => {
+    return this.props.currentSynthroom.messages.map((message) => {
+      return (<p>{message.username}: {message.content}</p>)
+    })
+  }
+
   handleSocketResponse = (data) => {
     switch (data.type) {
       //add cases here for keys being held or notes & shit (maybe get other users' patch state for different sounds?)
+      case 'ADD_MESSAGE':
+        this.props.addNewMessage(data.payload)
+        break;
       default:
         console.log(data)
         break;
     }
   }
 
+  handleSendMessage = (messageInput) => {
+    //send message to back end here
+    fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/add_message`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({content: messageInput, username: this.props.username})
+    })
+    //then add logic to handleSocketResponse
+    this.setState({
+      messageInput: ''
+    })
+  }
+
   render() {
+    console.log('props in synthroom',this.props);
     return (
       <div className="Synthroom">
         <ActionCable
@@ -363,6 +392,14 @@ class Synthroom extends Component {
         <div>
           <span>Current Octave: {this.props.currentPatchSettings.currentOctave}</span>
           <p>Chord Mode: Soon™</p>
+          <p>Current Room: {this.props.currentSynthroom.name}</p>
+          <p>Username: {this.props.username}</p>
+        </div>
+        <div id="chat">
+          {this.displayMessages()}
+          {/* form for new messages */}
+          <input type="text" placeholder="enter a message..." value={this.state.messageInput} onChange={(event) => this.setState({messageInput: event.target.value})}/>
+          <button onClick={() => {this.handleSendMessage(this.state.messageInput)}}>Send</button>
         </div>
         {/* <img src={topKeyboard} alt="" className="keyboard_graphic"/> */}
         {/* <img src={bottomKeyboard} alt="" className="keyboard_graphic"/> */}
@@ -375,4 +412,4 @@ const mapStateToProps = (state) => {
   return {...state}
 }
 
-export default connect(mapStateToProps, { fetchAllPatches, loadPatch, updatePatch, createNewPatch, deletePatch, addActiveOscillator, removeActiveOscillator })(Synthroom)
+export default connect(mapStateToProps, { fetchAllPatches, loadPatch, updatePatch, createNewPatch, deletePatch, addActiveOscillator, removeActiveOscillator, addNewMessage })(Synthroom)

@@ -9,10 +9,15 @@ const REMOVE_ACTIVE_OSCILLATOR = 'REMOVE_ACTIVE_OSCILLATOR'
 
 const FETCH_ALL_SYNTHROOMS = 'FETCH_ALL_SYNTHROOMS'
 const LOAD_SYNTHROOM = 'LOAD_SYNTHROOM'
+const CREATE_NEW_SYNTHROOM = 'CREATE_NEW_SYNTHROOM'
+
+const SET_USERNAME = 'SET_USERNAME'
+
+const ADD_NEW_MESSAGE = 'ADD_NEW_MESSAGE'
 
 export const fetchAllPatches = () => {
   return function(dispatch){
-    fetch('http://localhost:3000/patches')
+    fetch('http://192.168.4.168:3000/patches')
     .then(res => res.json())
     .then(patches => {
       dispatch({type: FETCH_ALL_PATCHES, payload: patches})
@@ -43,7 +48,7 @@ export const createNewPatch = (currentPatchSettings) => {
   }
 
   return function(dispatch){
-    fetch('http://localhost:3000/patches',{
+    fetch('http://192.168.4.168:3000/patches',{
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -59,7 +64,7 @@ export const createNewPatch = (currentPatchSettings) => {
 
 export const deletePatch = (patchID) => {
   return function(dispatch){
-    fetch(`http://localhost:3000/patches/${patchID}`,{
+    fetch(`http://192.168.4.168:3000/patches/${patchID}`,{
       method: "DELETE",
     })
     .then(() => {
@@ -86,7 +91,7 @@ export const removeActiveOscillator = (frequency) => {
 
 export const fetchAllSynthrooms = () => {
   return function(dispatch){
-    fetch('http://localhost:3000/synthrooms')
+    fetch('http://192.168.4.168:3000/synthrooms')
     .then(res => res.json())
     .then(synthrooms => {
       dispatch({type: FETCH_ALL_SYNTHROOMS, payload: synthrooms})
@@ -95,15 +100,52 @@ export const fetchAllSynthrooms = () => {
 }
 
 export const loadSynthroom = (synthroomID) => {
-  console.log(synthroomID);
   return function(dispatch){
-    fetch(`http://localhost:3000/synthrooms/${synthroomID}`)
+    fetch(`http://192.168.4.168:3000/synthrooms/${synthroomID}`)
 		.then(res => res.json())
 		.then(synthroom => {
+      console.log(synthroom)
       dispatch({
         type: LOAD_SYNTHROOM,
         payload: synthroom
       })
     })
+  }
+}
+
+export const createNewSynthroom = (synthroomName) => {
+  console.log(synthroomName);
+  return function(dispatch){
+    return fetch(`http://192.168.4.168:3000/synthrooms/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({name: synthroomName})
+    })
+		.then(res => res.json())
+		.then(synthroom => {
+      console.log(synthroom)
+      dispatch({
+        type: LOAD_SYNTHROOM,
+        payload: synthroom
+      })
+
+      return synthroom
+    })
+  }
+}
+
+export const setUsername = (username) => {
+  return {
+    type: SET_USERNAME,
+    payload: username
+  }
+}
+
+export const addNewMessage = (message) => {
+  return {
+    type: ADD_NEW_MESSAGE,
+    payload: message
   }
 }

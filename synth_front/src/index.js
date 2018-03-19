@@ -12,7 +12,7 @@ import { BrowserRouter as Router } from 'react-router-dom'
 
 let store = createStore(synthReducer, applyMiddleware(thunk))
 
-const API_WS_ROOT = `ws://localhost:3000/cable`
+const API_WS_ROOT = `ws://192.168.4.168:3000/cable`
 
 ReactDOM.render(
   <Router>

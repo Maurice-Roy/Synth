@@ -9,7 +9,8 @@ const defaultState = {
   allPatches: [],
   activeOscillators: {},
   allSynthrooms: [],
-  currentSynthroom: null
+  currentSynthroom: null,
+  username: 'Anonymous'
 }
 
 export default function synthReducer (state = defaultState, action) {
@@ -79,7 +80,25 @@ export default function synthReducer (state = defaultState, action) {
     case 'LOAD_SYNTHROOM':
       return {
         ...state,
-        currentSynthroom: action.payload
+        currentSynthroom: action.payload,
+      }
+      break;
+    case 'SET_USERNAME':
+      return {
+        ...state,
+        username: action.payload
+      }
+      break;
+    case 'ADD_NEW_MESSAGE':
+      return {
+        ...state,
+        currentSynthroom: {
+          ...state.currentSynthroom,
+          messages: [
+            ...state.currentSynthroom.messages,
+            action.payload
+          ]
+        }
       }
       break;
     default:

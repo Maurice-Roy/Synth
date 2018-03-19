@@ -4,8 +4,7 @@ Rails.application.routes.draw do
   resources :patches
   resources :synthrooms
 
-  # patch '/patches/:id', to: 'patches#update'
-  # get '/patches', to: 'patches#index'
+  post '/synthrooms/:id/add_message', to: 'synthrooms#add_message'
 
   mount ActionCable.server => '/cable'
 end
