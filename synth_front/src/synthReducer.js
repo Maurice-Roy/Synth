@@ -7,7 +7,9 @@ const defaultState = {
     currentOctave: 4
   },
   allPatches: [],
-  activeOscillators: {}
+  activeOscillators: {},
+  allSynthrooms: [],
+  currentSynthroom: null
 }
 
 export default function synthReducer (state = defaultState, action) {
@@ -29,7 +31,6 @@ export default function synthReducer (state = defaultState, action) {
           currentOctave: action.payload.current_octave
         }
       }
-
       break;
     case 'UPDATE_PATCH':
       let newPatchSettings = {...state.currentPatchSettings}
@@ -52,8 +53,6 @@ export default function synthReducer (state = defaultState, action) {
       }
       break;
     case 'DELETE_PATCH':
-      //FIXME return the updated state here
-      console.log('DELETE_PATCH');
       return defaultState
       break;
     case 'ADD_ACTIVE_OSCILLATOR':
@@ -69,6 +68,19 @@ export default function synthReducer (state = defaultState, action) {
       let newState = {...state}
       delete newState.activeOscillators[action.payload.frequency]
       return newState
+      break;
+    case 'FETCH_ALL_SYNTHROOMS':
+      console.log(action.payload);
+      return {
+        ...state,
+        allSynthrooms: action.payload
+      }
+      break;
+    case 'LOAD_SYNTHROOM':
+      return {
+        ...state,
+        currentSynthroom: action.payload
+      }
       break;
     default:
       return state

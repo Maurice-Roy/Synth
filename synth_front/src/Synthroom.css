@@ -1,14 +1,14 @@
-.App {
+.Synthroom {
   text-align: center;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 5s linear;
+.Synthroom-logo {
+  animation: Synthroom-logo-spin infinite 5s linear;
   height: 120px;
   margin-bottom: -15px;
 }
 
-.App-header {
+.Synthroom-header {
   background-color: rgb(168, 24, 24);
   height: 165px;
   padding: 20px;
@@ -17,15 +17,15 @@
   font-style: italic;
 }
 
-.App-title {
+.Synthroom-title {
   font-size: 1.5em;
 }
 
-.App-intro {
+.Synthroom-intro {
   font-size: large;
 }
 
-@keyframes App-logo-spin {
+@keyframes Synthroom-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
