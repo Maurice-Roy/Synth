@@ -6,5 +6,7 @@ test:
 
 production:
   adapter: redis
-  url: redis://localhost:6379/1
-  channel_prefix: synth_api_production
+  url: redis://redistogo:7b77cd3e4d24067966a6a7082b556cce@angelfish.redistogo.com:11719/
+  host: angelfish.redistogo.com
+  port: 11719
+  password: 7b77cd3e4d24067966a6a7082b556cce

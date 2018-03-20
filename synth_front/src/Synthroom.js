@@ -286,7 +286,7 @@ class Synthroom extends Component {
 
   savePatch = () => {
     if (this.props.currentPatchSettings.id !== null) {
-      fetch(`http://localhost:3000/patches/${this.props.currentPatchSettings.id}`, {
+      fetch(`http://192.168.4.168:3000/patches/${this.props.currentPatchSettings.id}`, {
 				method: "PATCH",
 				headers: {
 					'Content-Type': 'application/json'
@@ -331,7 +331,7 @@ class Synthroom extends Component {
 
   handleSendMessage = (messageInput) => {
     //send message to back end here
-    fetch(`http://localhost:3000/synthrooms/${this.props.currentSynthroom.id}/add_message`, {
+    fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/add_message`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -345,7 +345,7 @@ class Synthroom extends Component {
   }
 
   handleSendNotes = (key, frequency) => {
-    fetch(`http://localhost:3000/synthrooms/${this.props.currentSynthroom.id}/send_notes`, {
+    fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/send_notes`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -360,7 +360,7 @@ class Synthroom extends Component {
   }
 
   handleRemoveNotes = (key) => {
-    fetch(`http://localhost:3000/synthrooms/${this.props.currentSynthroom.id}/remove_notes`, {
+    fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/remove_notes`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

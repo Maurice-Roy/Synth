@@ -9,7 +9,7 @@ class SynthroomsController < ApplicationController
     @synthroom = Synthroom.new(synthroom_params)
 
     if @synthroom.valid?
-      @synthroom[:messages] = []
+      # @synthroom[:messages] = []
       @synthroom.save
       puts @synthroom
       render json: @synthroom
