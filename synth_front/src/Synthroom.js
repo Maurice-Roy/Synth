@@ -229,13 +229,15 @@ class Synthroom extends Component {
       let note = this.noteKeyboardAssociations[key]
       let frequency = this.noteFreq[this.props.currentPatchSettings.currentOctave][note]
       if (!this.props.activeOscillators[this.props.username] || !this.props.activeOscillators[this.props.username][key]) { //if this note isnt playing, play it
-        this.props.addActiveOscillator(key, this.playNote(frequency), this.props.username)
+        // this.props.addActiveOscillator(key, this.playNote(frequency), this.props.username)
+        this.handleSendNotes(key, frequency)
       }
     } else if (Object.keys(this.noteKeyboardAssociations2ndOctave).includes(key)) { // if key is a note - octave 2
       let note = this.noteKeyboardAssociations2ndOctave[key]
       let frequency = this.noteFreq[this.props.currentPatchSettings.currentOctave + 1][note]
       if (!this.props.activeOscillators[this.props.username] || !this.props.activeOscillators[this.props.username][key]) { //if this note isnt playing, play it
-        this.props.addActiveOscillator(key, this.playNote(frequency), this.props.username)
+        // this.props.addActiveOscillator(key, this.playNote(frequency), this.props.username)
+        this.handleSendNotes(key, frequency)
       }
     }
   }
@@ -249,30 +251,32 @@ class Synthroom extends Component {
     } else if (Object.keys(this.noteKeyboardAssociations).includes(key)) { // if key is a note - octave 1
       let note = this.noteKeyboardAssociations[key]
       let frequency = this.noteFreq[this.props.currentPatchSettings.currentOctave][note]
-      if (this.props.activeOscillators[this.props.username][key]) { //if this note is playing, stop it
+      // if (this.props.activeOscillators[this.props.username][key]) { //if this note is playing, stop it
         //also remove from activeOscillators array
-        this.props.activeOscillators[this.props.username][key].stop()
-        this.props.removeActiveOscillator(key, this.props.username)
-      }
+        // this.props.activeOscillators[this.props.username][key].stop()
+        // this.props.removeActiveOscillator(key, this.props.username)
+        this.handleRemoveNotes(key)
+      // }
     } else if (Object.keys(this.noteKeyboardAssociations2ndOctave).includes(key)) { // if key is a note - octave 2
       let note = this.noteKeyboardAssociations2ndOctave[key]
       let frequency = this.noteFreq[this.props.currentPatchSettings.currentOctave + 1][note]
-      if (this.props.activeOscillators[this.props.username][key]) { //if this note is playing, stop it
+      // if (this.props.activeOscillators[this.props.username][key]) { //if this note is playing, stop it
         //also remove from activeOscillators array
-        this.props.activeOscillators[this.props.username][key].stop()
-        this.props.removeActiveOscillator(key, this.props.username)
-      }
+        // this.props.activeOscillators[this.props.username][key].stop()
+        // this.props.removeActiveOscillator(key, this.props.username)
+        this.handleRemoveNotes(key)
+      // }
     }
   }
 
-  playNote = (freq) => {
-    let osc = this.audioContext.createOscillator();
-    osc.connect(this.masterGainNode);
-    osc.type = this.props.currentPatchSettings.selectedWaveform
-    osc.frequency.value = freq;
-    osc.start();
-    return osc;
-  }
+  // playNote = (freq) => {
+  //   let osc = this.audioContext.createOscillator();
+  //   osc.connect(this.masterGainNode);
+  //   osc.type = this.props.currentPatchSettings.selectedWaveform
+  //   osc.frequency.value = freq;
+  //   osc.start();
+  //   return osc;
+  // }
 
   listPatches = () => {
     return this.props.allPatches.map((patch) => {
@@ -304,10 +308,17 @@ class Synthroom extends Component {
     switch (data.type) {
       //add cases here for keys being held or notes & shit (maybe get other users' patch state for different sounds?)
       case 'ADD_SOCKET_OSCILLATOR':
-        this.props.addActiveOscillator(data.payload)
+        let osc = this.audioContext.createOscillator();
+        osc.connect(this.masterGainNode);
+        osc.type = data.payload.waveform
+        osc.frequency.value = data.payload.frequency;
+        osc.start();
+        this.props.addActiveOscillator(data.payload.key, osc, data.payload.username)
         break;
       case 'REMOVE_SOCKET_OSCILLATOR':
-        this.props.removeActiveOscillator(data.payload)
+        if (this.props.activeOscillators[data.payload.username] && this.props.activeOscillators[data.payload.username][data.payload.key])
+          this.props.activeOscillators[data.payload.username][data.payload.key].stop()
+          this.props.removeActiveOscillator(data.payload.key, data.payload.username)
         break;
       case 'ADD_MESSAGE':
         this.props.addNewMessage(data.payload)
@@ -330,6 +341,34 @@ class Synthroom extends Component {
     //then add logic to handleSocketResponse
     this.setState({
       messageInput: ''
+    })
+  }
+
+  handleSendNotes = (key, frequency) => {
+    fetch(`http://localhost:3000/synthrooms/${this.props.currentSynthroom.id}/send_notes`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        key: key,
+        frequency: frequency,
+        waveform: this.props.currentPatchSettings.selectedWaveform,
+        username: this.props.username
+      })
+    })
+  }
+
+  handleRemoveNotes = (key) => {
+    fetch(`http://localhost:3000/synthrooms/${this.props.currentSynthroom.id}/remove_notes`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        key: key,
+        username: this.props.username
+      })
     })
   }
 

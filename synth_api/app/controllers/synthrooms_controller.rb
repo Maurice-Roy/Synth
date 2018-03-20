@@ -32,6 +32,48 @@ class SynthroomsController < ApplicationController
     end
   end
 
+  def send_notes
+    synthroom = Synthroom.find(params[:id])
+    if synthroom
+      SynthroomChannel.broadcast_to(synthroom, {
+        type: 'ADD_SOCKET_OSCILLATOR',
+        payload: prepare_add_note_data(params)
+      })
+      render json: prepare_add_note_data(params)
+    else
+      render json: {error: 'There was an error sending your note!'}
+    end
+  end
+
+  def remove_notes
+    synthroom = Synthroom.find(params[:id])
+    if synthroom
+      SynthroomChannel.broadcast_to(synthroom, {
+        type: 'REMOVE_SOCKET_OSCILLATOR',
+        payload: prepare_remove_note_data(params)
+      })
+      render json: prepare_remove_note_data(params)
+    else
+      render json: {error: 'There was an error removing your note!'}
+    end
+  end
+
+  def prepare_add_note_data(params)
+    note_hash = {
+      key: params[:key],
+      frequency: params[:frequency],
+      waveform: params[:waveform],
+      username: params[:username],
+    }
+  end
+
+  def prepare_remove_note_data(params)
+    note_hash = {
+      key: params[:key],
+      username: params[:username],
+    }
+  end
+
   def prepare_message(message)
     message_hash = {
       id: message.id,
