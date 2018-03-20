@@ -281,7 +281,7 @@ class Synthroom extends Component {
 
   savePatch = () => {
     if (this.props.currentPatchSettings.id !== null) {
-      fetch(`http://192.168.4.168:3000/patches/${this.props.currentPatchSettings.id}`, {
+      fetch(`http://localhost:3000/patches/${this.props.currentPatchSettings.id}`, {
 				method: "PATCH",
 				headers: {
 					'Content-Type': 'application/json'
@@ -313,7 +313,7 @@ class Synthroom extends Component {
 
   handleSendMessage = (messageInput) => {
     //send message to back end here
-    fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/add_message`, {
+    fetch(`http://localhost:3000/synthrooms/${this.props.currentSynthroom.id}/add_message`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

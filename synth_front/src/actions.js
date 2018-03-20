@@ -17,7 +17,7 @@ const ADD_NEW_MESSAGE = 'ADD_NEW_MESSAGE'
 
 export const fetchAllPatches = () => {
   return function(dispatch){
-    fetch('http://192.168.4.168:3000/patches')
+    fetch('http://localhost:3000/patches')
     .then(res => res.json())
     .then(patches => {
       dispatch({type: FETCH_ALL_PATCHES, payload: patches})
@@ -48,7 +48,7 @@ export const createNewPatch = (currentPatchSettings) => {
   }
 
   return function(dispatch){
-    fetch('http://192.168.4.168:3000/patches',{
+    fetch('http://localhost:3000/patches',{
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -64,7 +64,7 @@ export const createNewPatch = (currentPatchSettings) => {
 
 export const deletePatch = (patchID) => {
   return function(dispatch){
-    fetch(`http://192.168.4.168:3000/patches/${patchID}`,{
+    fetch(`http://localhost:3000/patches/${patchID}`,{
       method: "DELETE",
     })
     .then(() => {
@@ -91,7 +91,7 @@ export const removeActiveOscillator = (frequency) => {
 
 export const fetchAllSynthrooms = () => {
   return function(dispatch){
-    fetch('http://192.168.4.168:3000/synthrooms')
+    fetch('http://localhost:3000/synthrooms')
     .then(res => res.json())
     .then(synthrooms => {
       dispatch({type: FETCH_ALL_SYNTHROOMS, payload: synthrooms})
@@ -101,7 +101,7 @@ export const fetchAllSynthrooms = () => {
 
 export const loadSynthroom = (synthroomID) => {
   return function(dispatch){
-    fetch(`http://192.168.4.168:3000/synthrooms/${synthroomID}`)
+    fetch(`http://localhost:3000/synthrooms/${synthroomID}`)
 		.then(res => res.json())
 		.then(synthroom => {
       console.log(synthroom)
@@ -116,7 +116,7 @@ export const loadSynthroom = (synthroomID) => {
 export const createNewSynthroom = (synthroomName) => {
   console.log(synthroomName);
   return function(dispatch){
-    return fetch(`http://192.168.4.168:3000/synthrooms/`, {
+    return fetch(`http://localhost:3000/synthrooms/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
