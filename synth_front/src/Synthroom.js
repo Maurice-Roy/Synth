@@ -228,14 +228,14 @@ class Synthroom extends Component {
     } else if (Object.keys(this.noteKeyboardAssociations).includes(key)) { // if key is a note - octave 1
       let note = this.noteKeyboardAssociations[key]
       let frequency = this.noteFreq[this.props.currentPatchSettings.currentOctave][note]
-      if (!this.props.activeOscillators[frequency]) { //if this note isnt playing, play it
-        this.props.addActiveOscillator(frequency, this.playNote(frequency))
+      if (!this.props.activeOscillators[note]) { //if this note isnt playing, play it
+        this.props.addActiveOscillator(note, this.playNote(frequency))
       }
     } else if (Object.keys(this.noteKeyboardAssociations2ndOctave).includes(key)) { // if key is a note - octave 2
       let note = this.noteKeyboardAssociations2ndOctave[key]
       let frequency = this.noteFreq[this.props.currentPatchSettings.currentOctave + 1][note]
-      if (!this.props.activeOscillators[frequency]) { //if this note isnt playing, play it
-        this.props.addActiveOscillator(frequency, this.playNote(frequency))
+      if (!this.props.activeOscillators[note]) { //if this note isnt playing, play it
+        this.props.addActiveOscillator(note, this.playNote(frequency))
       }
     }
   }
@@ -248,18 +248,18 @@ class Synthroom extends Component {
     } else if (Object.keys(this.noteKeyboardAssociations).includes(key)) { // if key is a note - octave 1
       let note = this.noteKeyboardAssociations[key]
       let frequency = this.noteFreq[this.props.currentPatchSettings.currentOctave][note]
-      if (this.props.activeOscillators[frequency]) { //if this note is playing, stop it
+      if (this.props.activeOscillators[note]) { //if this note is playing, stop it
         //also remove from activeOscillators array
-        this.props.activeOscillators[frequency].stop()
-        this.props.removeActiveOscillator(frequency)
+        this.props.activeOscillators[note].stop()
+        this.props.removeActiveOscillator(note)
       }
     } else if (Object.keys(this.noteKeyboardAssociations2ndOctave).includes(key)) { // if key is a note - octave 2
       let note = this.noteKeyboardAssociations2ndOctave[key]
       let frequency = this.noteFreq[this.props.currentPatchSettings.currentOctave + 1][note]
-      if (this.props.activeOscillators[frequency]) { //if this note is playing, stop it
+      if (this.props.activeOscillators[note]) { //if this note is playing, stop it
         //also remove from activeOscillators array
-        this.props.activeOscillators[frequency].stop()
-        this.props.removeActiveOscillator(frequency)
+        this.props.activeOscillators[note].stop()
+        this.props.removeActiveOscillator(note)
       }
     }
   }

@@ -6,8 +6,8 @@ const defaultState = {
     masterGain: 0.5,
     currentOctave: 4
   },
-  allPatches: [],
   activeOscillators: {},
+  allPatches: [],
   allSynthrooms: [],
   currentSynthroom: null,
   username: 'Anonymous'
@@ -61,13 +61,13 @@ export default function synthReducer (state = defaultState, action) {
         ...state,
         activeOscillators: {
           ...state.activeOscillators,
-          [action.payload.frequency]: action.payload.oscillator
+          [action.payload.note]: action.payload.oscillator
         }
       }
       break;
     case 'REMOVE_ACTIVE_OSCILLATOR':
       let newState = {...state}
-      delete newState.activeOscillators[action.payload.frequency]
+      delete newState.activeOscillators[action.payload.note]
       return newState
       break;
     case 'FETCH_ALL_SYNTHROOMS':

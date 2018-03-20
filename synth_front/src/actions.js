@@ -73,19 +73,17 @@ export const deletePatch = (patchID) => {
   }
 }
 
-export const addActiveOscillator = (frequency, oscillator) => {
-  console.log("add actice osc", frequency, oscillator)
+export const addActiveOscillator = (note, oscillator) => {
   return {
     type: ADD_ACTIVE_OSCILLATOR,
-    payload: {frequency, oscillator}
+    payload: {note, oscillator}
   }
 }
 
-export const removeActiveOscillator = (frequency) => {
-  console.log("remove actice osc", frequency)
+export const removeActiveOscillator = (note) => {
   return {
     type: REMOVE_ACTIVE_OSCILLATOR,
-    payload: {frequency}
+    payload: {note}
   }
 }
 
