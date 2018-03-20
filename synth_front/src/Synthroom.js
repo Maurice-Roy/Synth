@@ -228,19 +228,20 @@ class Synthroom extends Component {
     } else if (Object.keys(this.noteKeyboardAssociations).includes(key)) { // if key is a note - octave 1
       let note = this.noteKeyboardAssociations[key]
       let frequency = this.noteFreq[this.props.currentPatchSettings.currentOctave][note]
-      if (!this.props.activeOscillators[note]) { //if this note isnt playing, play it
-        this.props.addActiveOscillator(note, this.playNote(frequency))
+      if (!this.props.activeOscillators[this.props.username] || !this.props.activeOscillators[this.props.username][key]) { //if this note isnt playing, play it
+        this.props.addActiveOscillator(key, this.playNote(frequency), this.props.username)
       }
     } else if (Object.keys(this.noteKeyboardAssociations2ndOctave).includes(key)) { // if key is a note - octave 2
       let note = this.noteKeyboardAssociations2ndOctave[key]
       let frequency = this.noteFreq[this.props.currentPatchSettings.currentOctave + 1][note]
-      if (!this.props.activeOscillators[note]) { //if this note isnt playing, play it
-        this.props.addActiveOscillator(note, this.playNote(frequency))
+      if (!this.props.activeOscillators[this.props.username] || !this.props.activeOscillators[this.props.username][key]) { //if this note isnt playing, play it
+        this.props.addActiveOscillator(key, this.playNote(frequency), this.props.username)
       }
     }
   }
 
   keyReleased = (event) => {
+    console.log(this.props);
     let key = (event.detail || event.which).toString()
 
     if (this.controlsArray.includes(key)) {
@@ -248,18 +249,18 @@ class Synthroom extends Component {
     } else if (Object.keys(this.noteKeyboardAssociations).includes(key)) { // if key is a note - octave 1
       let note = this.noteKeyboardAssociations[key]
       let frequency = this.noteFreq[this.props.currentPatchSettings.currentOctave][note]
-      if (this.props.activeOscillators[note]) { //if this note is playing, stop it
+      if (this.props.activeOscillators[this.props.username][key]) { //if this note is playing, stop it
         //also remove from activeOscillators array
-        this.props.activeOscillators[note].stop()
-        this.props.removeActiveOscillator(note)
+        this.props.activeOscillators[this.props.username][key].stop()
+        this.props.removeActiveOscillator(key, this.props.username)
       }
     } else if (Object.keys(this.noteKeyboardAssociations2ndOctave).includes(key)) { // if key is a note - octave 2
       let note = this.noteKeyboardAssociations2ndOctave[key]
       let frequency = this.noteFreq[this.props.currentPatchSettings.currentOctave + 1][note]
-      if (this.props.activeOscillators[note]) { //if this note is playing, stop it
+      if (this.props.activeOscillators[this.props.username][key]) { //if this note is playing, stop it
         //also remove from activeOscillators array
-        this.props.activeOscillators[note].stop()
-        this.props.removeActiveOscillator(note)
+        this.props.activeOscillators[this.props.username][key].stop()
+        this.props.removeActiveOscillator(key, this.props.username)
       }
     }
   }
@@ -302,6 +303,12 @@ class Synthroom extends Component {
   handleSocketResponse = (data) => {
     switch (data.type) {
       //add cases here for keys being held or notes & shit (maybe get other users' patch state for different sounds?)
+      case 'ADD_SOCKET_OSCILLATOR':
+        this.props.addActiveOscillator(data.payload)
+        break;
+      case 'REMOVE_SOCKET_OSCILLATOR':
+        this.props.removeActiveOscillator(data.payload)
+        break;
       case 'ADD_MESSAGE':
         this.props.addNewMessage(data.payload)
         break;

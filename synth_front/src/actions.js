@@ -73,17 +73,17 @@ export const deletePatch = (patchID) => {
   }
 }
 
-export const addActiveOscillator = (note, oscillator) => {
+export const addActiveOscillator = (key, oscillator, username) => {
   return {
     type: ADD_ACTIVE_OSCILLATOR,
-    payload: {note, oscillator}
+    payload: {key, oscillator, username}
   }
 }
 
-export const removeActiveOscillator = (note) => {
+export const removeActiveOscillator = (key, username) => {
   return {
     type: REMOVE_ACTIVE_OSCILLATOR,
-    payload: {note}
+    payload: {key, username}
   }
 }
 

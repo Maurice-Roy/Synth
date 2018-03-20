@@ -57,17 +57,21 @@ export default function synthReducer (state = defaultState, action) {
       return defaultState
       break;
     case 'ADD_ACTIVE_OSCILLATOR':
+      console.log(action.payload);
       return {
         ...state,
         activeOscillators: {
           ...state.activeOscillators,
-          [action.payload.note]: action.payload.oscillator
+          [action.payload.username]: {
+            ...state.activeOscillators[action.payload.username],
+            [action.payload.key]: action.payload.oscillator
+          }
         }
       }
       break;
     case 'REMOVE_ACTIVE_OSCILLATOR':
       let newState = {...state}
-      delete newState.activeOscillators[action.payload.note]
+      delete newState.activeOscillators[action.payload.username][action.payload.key]
       return newState
       break;
     case 'FETCH_ALL_SYNTHROOMS':
