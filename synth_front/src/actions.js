@@ -15,6 +15,9 @@ const SET_USERNAME = 'SET_USERNAME'
 
 const ADD_NEW_MESSAGE = 'ADD_NEW_MESSAGE'
 
+const ADD_NEW_USER = 'ADD_NEW_USER'
+const REMOVE_USER = 'REMOVE_USER'
+
 export const fetchAllPatches = () => {
   return function(dispatch){
     fetch('http://192.168.4.168:3000/patches')
@@ -145,5 +148,19 @@ export const addNewMessage = (message) => {
   return {
     type: ADD_NEW_MESSAGE,
     payload: message
+  }
+}
+
+export const addNewUser = (username, oscillatorGain) => {
+  return {
+    type: ADD_NEW_USER,
+    payload: {username, oscillatorGain}
+  }
+}
+
+export const removeUser = (username) => {
+  return {
+    type: REMOVE_USER,
+    payload: username
   }
 }

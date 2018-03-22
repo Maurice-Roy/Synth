@@ -10,7 +10,8 @@ const defaultState = {
   allPatches: [],
   allSynthrooms: [],
   currentSynthroom: null,
-  username: 'Anonymous'
+  username: 'Anonymous',
+  allCurrentUsers: {}
 }
 
 export default function synthReducer (state = defaultState, action) {
@@ -57,7 +58,6 @@ export default function synthReducer (state = defaultState, action) {
       return defaultState
       break;
     case 'ADD_ACTIVE_OSCILLATOR':
-      console.log(action.payload);
       return {
         ...state,
         activeOscillators: {
@@ -70,12 +70,11 @@ export default function synthReducer (state = defaultState, action) {
       }
       break;
     case 'REMOVE_ACTIVE_OSCILLATOR':
-      let newState = {...state}
+      var newState = {...state}
       delete newState.activeOscillators[action.payload.username][action.payload.key]
       return newState
       break;
     case 'FETCH_ALL_SYNTHROOMS':
-      console.log(action.payload);
       return {
         ...state,
         allSynthrooms: action.payload
@@ -104,6 +103,27 @@ export default function synthReducer (state = defaultState, action) {
           ]
         }
       }
+      break;
+    case 'ADD_NEW_USER':
+      return {
+        ...state,
+        activeOscillators: {
+          ...state.activeOscillators,
+          [action.payload.username]: {}
+        },
+        allCurrentUsers: {
+          ...state.allCurrentUsers,
+          [action.payload.username]: {
+            // add user's signal processing here
+            oscillatorGain: action.payload.oscillatorGain
+          }
+        }
+      }
+      break;
+    case 'REMOVE_USER':
+      var newState = {...state}
+      delete newState.allCurrentUsers[action.payload]
+      return newState
       break;
     default:
       return state

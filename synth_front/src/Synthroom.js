@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
-import { fetchAllPatches, loadPatch, updatePatch, createNewPatch, deletePatch, addActiveOscillator, removeActiveOscillator, addNewMessage } from './actions'
+import { fetchAllPatches, loadPatch, updatePatch, createNewPatch, deletePatch, addActiveOscillator, removeActiveOscillator, addNewMessage, addNewUser, removeUser } from './actions'
 import { ActionCable } from 'react-actioncable-provider'
 import logo from './scull4.png';
 import topKeyboard from './top_keyboard.svg'
@@ -151,6 +151,15 @@ class Synthroom extends Component {
     //initial fetch for patches from the backend
     this.props.fetchAllPatches()
 
+    //create this user's data & signal processing on all clients' machines
+    fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/add_new_user`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({username: this.props.username})
+    })
+
     //keyboard keys => musical notes & controls
     this.controlsArray = ['219', '220', '221']
     this.noteKeyboardAssociations = {
@@ -269,15 +278,6 @@ class Synthroom extends Component {
     }
   }
 
-  // playNote = (freq) => {
-  //   let osc = this.audioContext.createOscillator();
-  //   osc.connect(this.masterGainNode);
-  //   osc.type = this.props.currentPatchSettings.selectedWaveform
-  //   osc.frequency.value = freq;
-  //   osc.start();
-  //   return osc;
-  // }
-
   listPatches = () => {
     return this.props.allPatches.map((patch) => {
       return (<option value={patch.id} key={patch.id} id={patch.id}>{patch.name}</option>)
@@ -305,16 +305,49 @@ class Synthroom extends Component {
   }
 
   handleSocketResponse = (data) => {
+    console.log("data from handleSocketResponse", data)
     switch (data.type) {
       //add cases here for keys being held or notes & shit (maybe get other users' patch state for different sounds?)
+      case 'ADD_NEW_USER':
+        // create signal processing for this user here
+        let oscillatorGain = this.audioContext.createGain();
+        oscillatorGain.connect(this.masterGainNode);
+        this.props.addNewUser(data.payload, oscillatorGain) // add signal processing to addNewUser here
+        break;
+      case 'REMOVE_USER':
+        // -turn off & delete all oscillators for this user
+        let removedUserOscillators = this.props.activeOscillators[data.payload]
+        for (var note in removedUserOscillators) {
+          removedUserOscillators[note].stop()
+        }
+        // remove:
+        //  -username object in activeOscillators
+        //  -signal processing for user (in state)
+        this.props.removeUser(data.payload)
+        break;
       case 'ADD_SOCKET_OSCILLATOR':
+        //check if this user is in your state & create if not
+        if (!this.props.allCurrentUsers[data.payload.username]) {
+          let oscillatorGain = this.audioContext.createGain();
+          oscillatorGain.connect(this.masterGainNode);
+          this.props.addNewUser(data.payload.username, oscillatorGain)
+        }
+
+        //create oscillator and save to state
         let osc = this.audioContext.createOscillator();
-        osc.connect(this.masterGainNode);
+        osc.connect(this.props.allCurrentUsers[data.payload.username].oscillatorGain);
         osc.type = data.payload.waveform
         osc.frequency.value = data.payload.frequency;
         osc.start();
         this.props.addActiveOscillator(data.payload.key, osc, data.payload.username)
         break;
+        // let osc = this.audioContext.createOscillator();
+        // osc.connect(this.masterGainNode);
+        // osc.type = data.payload.waveform
+        // osc.frequency.value = data.payload.frequency;
+        // osc.start();
+        // this.props.addActiveOscillator(data.payload.key, osc, data.payload.username)
+        // break;
       case 'REMOVE_SOCKET_OSCILLATOR':
         if (this.props.activeOscillators[data.payload.username] && this.props.activeOscillators[data.payload.username][data.payload.key])
           this.props.activeOscillators[data.payload.username][data.payload.key].stop()
@@ -377,14 +410,14 @@ class Synthroom extends Component {
     return (
       <div className="Synthroom">
         <ActionCable
-          channel={{channel: 'SynthroomChannel', synthroom_id: this.props.currentSynthroom.id, beef: 'steak'}}
+          channel={{channel: 'SynthroomChannel', synthroom_id: this.props.currentSynthroom.id, username: this.props.username}}
           onReceived={this.handleSocketResponse}
         />
         <header className="Synthroom-header">
           <img src={logo} className="Synthroom-logo" alt="logo" />
           <h1 className="Synthroom-title">WELCOME TO HELL!</h1>
         </header>
-        <div className="patch-controls">
+        <div className="patch-crud">
           <div className="select-save-delete">
             <span>Patches: </span>
             <select name="patches" id="patchSelect" defaultValue="Default" onChange={(event) => {
@@ -417,14 +450,14 @@ class Synthroom extends Component {
           </div>
         </div>
         <div className="master-gain-container">
-          <span>Volume: </span>
+          <span>Master Volume: </span>
           <input id="masterGain" type="range" min="0.0" max="1.0" step="0.01"
               defaultValue="0.5" list="volumes" name="volume" ref="masterGain"
             onChange={(event) => this.props.updatePatch(event.target.id, event.target.value)}/>
-          <datalist id="volumes">
+          {/* <datalist id="volumes">
             <option value="0.0" label="Mute"/>
             <option value="1.0" label="100%"/>
-          </datalist>
+          </datalist> */}
         </div>
         <div className="waveform-select-container">
           <span>Waveform: </span>
@@ -435,7 +468,13 @@ class Synthroom extends Component {
             <option value="triangle">Triangle</option>
           </select>
         </div>
-        <div>
+        {/* <div className="patch-settings">
+          <span>Oscillator Gain: </span>
+          <input id="oscillatorGain" type="range" min="0.0" max="1.0" step="0.01"
+              defaultValue="0.5" list="volumes" name="volume" ref="oscillatorGain"
+            onChange={(event) => this.props.updatePatch(event.target.id, event.target.value)}/>
+        </div> */}
+        <div className="synthroom-info">
           <span>Current Octave: {this.props.currentPatchSettings.currentOctave}</span>
           <p>Chord Mode: Soon™</p>
           <p>Current Room: {this.props.currentSynthroom.name}</p>
@@ -458,4 +497,4 @@ const mapStateToProps = (state) => {
   return {...state}
 }
 
-export default connect(mapStateToProps, { fetchAllPatches, loadPatch, updatePatch, createNewPatch, deletePatch, addActiveOscillator, removeActiveOscillator, addNewMessage })(Synthroom)
+export default connect(mapStateToProps, { fetchAllPatches, loadPatch, updatePatch, createNewPatch, deletePatch, addActiveOscillator, removeActiveOscillator, addNewMessage, addNewUser, removeUser })(Synthroom)

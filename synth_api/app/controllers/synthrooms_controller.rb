@@ -18,6 +18,14 @@ class SynthroomsController < ApplicationController
     end
   end
 
+  def add_new_user
+    synthroom = Synthroom.find(params[:id])
+    SynthroomChannel.broadcast_to(synthroom, {
+      type: 'ADD_NEW_USER',
+      payload: params[:username]
+    })
+  end
+
   def add_message
     synthroom = Synthroom.find(params[:id])
     if synthroom
