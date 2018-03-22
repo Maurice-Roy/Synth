@@ -15,7 +15,7 @@ const SET_USERNAME = 'SET_USERNAME'
 
 const ADD_NEW_MESSAGE = 'ADD_NEW_MESSAGE'
 
-const ADD_NEW_USER = 'ADD_NEW_USER'
+const ADD_USER = 'ADD_USER'
 const REMOVE_USER = 'REMOVE_USER'
 
 export const fetchAllPatches = () => {
@@ -151,10 +151,10 @@ export const addNewMessage = (message) => {
   }
 }
 
-export const addNewUser = (username, oscillatorGain) => {
+export const addUser = (username, newUser) => {
   return {
-    type: ADD_NEW_USER,
-    payload: {username, oscillatorGain}
+    type: ADD_USER,
+    payload: {username, newUser}
   }
 }
 

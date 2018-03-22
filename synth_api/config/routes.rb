@@ -4,7 +4,8 @@ Rails.application.routes.draw do
   resources :patches
   resources :synthrooms
 
-  post '/synthrooms/:id/add_new_user', to: 'synthrooms#add_new_user'
+  post '/synthrooms/:id/add_user', to: 'synthrooms#add_user'
+  post '/synthrooms/:id/retrieve_user_data', to: 'synthrooms#retrieve_user_data'
   post '/synthrooms/:id/add_message', to: 'synthrooms#add_message'
   post '/synthrooms/:id/send_notes', to: 'synthrooms#send_notes'
   post '/synthrooms/:id/remove_notes', to: 'synthrooms#remove_notes'

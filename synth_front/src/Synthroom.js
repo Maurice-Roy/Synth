@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
-import { fetchAllPatches, loadPatch, updatePatch, createNewPatch, deletePatch, addActiveOscillator, removeActiveOscillator, addNewMessage, addNewUser, removeUser } from './actions'
+import { fetchAllPatches, loadPatch, updatePatch, createNewPatch, deletePatch, addActiveOscillator, removeActiveOscillator, addNewMessage, addUser, removeUser } from './actions'
 import { ActionCable } from 'react-actioncable-provider'
 import logo from './scull4.png';
 import topKeyboard from './top_keyboard.svg'
@@ -8,6 +8,19 @@ import bottomKeyboard from './bottom_keyboard.svg'
 import './Synthroom.css';
 
 class Synthroom extends Component {
+  // constructor(props) {
+  //   super(props)
+  //   this.state = {
+  //     messageInput: ''
+  //   }
+  //
+  //   let url = window.location.href
+  //   let synthroomID = url.split('/')[4]
+  //
+  //   fetch(`http://192.168.4.168:3000/synthrooms/${synthroomID}/retrieve_user_data`, {
+  //     method: "POST"
+  //   })
+  // }
 
   state = {
     messageInput: ''
@@ -151,14 +164,9 @@ class Synthroom extends Component {
     //initial fetch for patches from the backend
     this.props.fetchAllPatches()
 
-    //create this user's data & signal processing on all clients' machines
-    fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/add_new_user`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({username: this.props.username})
-    })
+    //send signal to all users in room to prompt gathering user data
+    console.log('ABOUT TO SEND INITIAL FETCH FOR USERS');
+
 
     //keyboard keys => musical notes & controls
     this.controlsArray = ['219', '220', '221']
@@ -207,10 +215,16 @@ class Synthroom extends Component {
   //FIXME - this is where the master gain slider is mapped to the state
   componentWillReceiveProps = (nextProps) => {
     //does this turn into a massive switch statement for each parameter?
-    this.refs.masterGain.value = nextProps.currentPatchSettings.masterGain
-    this.refs.waveformSelect.value = nextProps.currentPatchSettings.selectedWaveform
+    this.refs.masterGain.value = nextProps.allCurrentUsers[this.props.username].currentPatchSettings.masterGain
+    this.refs.waveformSelect.value = nextProps.allCurrentUsers[this.props.username].currentPatchSettings.selectedWaveform
 
-    this.masterGainNode.gain.value = nextProps.currentPatchSettings.masterGain
+    this.masterGainNode.gain.value = nextProps.allCurrentUsers[this.props.username].currentPatchSettings.masterGain
+
+    if(nextProps.allCurrentUsers[nextProps.username] && !nextProps.allCurrentUsers[nextProps.username].signalProcessing.oscillatorGainNode){
+      fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/retrieve_user_data`, {
+        method: "POST"
+      })
+    }
   }
 
   keyPressed = (event) => {
@@ -219,14 +233,14 @@ class Synthroom extends Component {
     if (this.controlsArray.includes(key)) { //if key is [ or ] or \
       switch (key) {
         case '219':
-          if (this.props.currentPatchSettings.currentOctave > 0) {
-            let newOctave = this.props.currentPatchSettings.currentOctave -= 1
+          if (this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave > 0) {
+            let newOctave = this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave -= 1
             this.props.updatePatch('currentOctave', newOctave)
           }
           break;
         case '221':
-          if (this.props.currentPatchSettings.currentOctave < 7) {
-            let newOctave = this.props.currentPatchSettings.currentOctave += 1
+          if (this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave < 7) {
+            let newOctave = this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave += 1
             this.props.updatePatch('currentOctave', newOctave)
           }
           break;
@@ -236,14 +250,14 @@ class Synthroom extends Component {
       }
     } else if (Object.keys(this.noteKeyboardAssociations).includes(key)) { // if key is a note - octave 1
       let note = this.noteKeyboardAssociations[key]
-      let frequency = this.noteFreq[this.props.currentPatchSettings.currentOctave][note]
+      let frequency = this.noteFreq[this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave][note]
       if (!this.props.activeOscillators[this.props.username] || !this.props.activeOscillators[this.props.username][key]) { //if this note isnt playing, play it
         // this.props.addActiveOscillator(key, this.playNote(frequency), this.props.username)
         this.handleSendNotes(key, frequency)
       }
     } else if (Object.keys(this.noteKeyboardAssociations2ndOctave).includes(key)) { // if key is a note - octave 2
       let note = this.noteKeyboardAssociations2ndOctave[key]
-      let frequency = this.noteFreq[this.props.currentPatchSettings.currentOctave + 1][note]
+      let frequency = this.noteFreq[this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave + 1][note]
       if (!this.props.activeOscillators[this.props.username] || !this.props.activeOscillators[this.props.username][key]) { //if this note isnt playing, play it
         // this.props.addActiveOscillator(key, this.playNote(frequency), this.props.username)
         this.handleSendNotes(key, frequency)
@@ -259,7 +273,7 @@ class Synthroom extends Component {
       //if key is [ or ] or \
     } else if (Object.keys(this.noteKeyboardAssociations).includes(key)) { // if key is a note - octave 1
       let note = this.noteKeyboardAssociations[key]
-      let frequency = this.noteFreq[this.props.currentPatchSettings.currentOctave][note]
+      let frequency = this.noteFreq[this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave][note]
       // if (this.props.activeOscillators[this.props.username][key]) { //if this note is playing, stop it
         //also remove from activeOscillators array
         // this.props.activeOscillators[this.props.username][key].stop()
@@ -268,7 +282,7 @@ class Synthroom extends Component {
       // }
     } else if (Object.keys(this.noteKeyboardAssociations2ndOctave).includes(key)) { // if key is a note - octave 2
       let note = this.noteKeyboardAssociations2ndOctave[key]
-      let frequency = this.noteFreq[this.props.currentPatchSettings.currentOctave + 1][note]
+      let frequency = this.noteFreq[this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave + 1][note]
       // if (this.props.activeOscillators[this.props.username][key]) { //if this note is playing, stop it
         //also remove from activeOscillators array
         // this.props.activeOscillators[this.props.username][key].stop()
@@ -285,13 +299,13 @@ class Synthroom extends Component {
   }
 
   savePatch = () => {
-    if (this.props.currentPatchSettings.id !== null) {
-      fetch(`http://192.168.4.168:3000/patches/${this.props.currentPatchSettings.id}`, {
+    if (this.props.allCurrentUsers[this.props.username].currentPatchSettings.id !== null) {
+      fetch(`http://192.168.4.168:3000/patches/${this.props.allCurrentUsers[this.props.username].currentPatchSettings.id}`, {
 				method: "PATCH",
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify(this.props.currentPatchSettings)
+				body: JSON.stringify(this.props.allCurrentUsers[this.props.username].currentPatchSettings)
 			})
 			.then(res => res.json())
       .then(() => this.props.fetchAllPatches())
@@ -308,11 +322,35 @@ class Synthroom extends Component {
     console.log("data from handleSocketResponse", data)
     switch (data.type) {
       //add cases here for keys being held or notes & shit (maybe get other users' patch state for different sounds?)
-      case 'ADD_NEW_USER':
+      case 'RETRIEVE_USER_DATA':
+        //collect all other current user's name and patch state, & create their signal processing
+        console.log('ABOUT TO RETRIEVE_USER_DATA');
+        fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/add_user`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            username: this.props.username,
+            currentPatchSettings: this.props.allCurrentUsers[this.props.username].currentPatchSettings
+          })
+        })
+        break;
+      case 'ADD_USER':
         // create signal processing for this user here
-        let oscillatorGain = this.audioContext.createGain();
-        oscillatorGain.connect(this.masterGainNode);
-        this.props.addNewUser(data.payload, oscillatorGain) // add signal processing to addNewUser here
+        console.log('ADDING USER');
+        let oscillatorGainNode = this.audioContext.createGain();
+        oscillatorGainNode.value = data.payload.currentPatchSettings.oscillatorGainNodeValue
+        oscillatorGainNode.connect(this.masterGainNode);
+        console.log(oscillatorGainNode);
+
+        let newUser = {
+          currentPatchSettings: data.payload.currentPatchSettings,
+          signalProcessing: {
+            oscillatorGainNode: oscillatorGainNode
+          }
+        }
+        this.props.addUser(data.payload.username, newUser) // add signal processing to addNewUser here
         break;
       case 'REMOVE_USER':
         // -turn off & delete all oscillators for this user
@@ -327,15 +365,18 @@ class Synthroom extends Component {
         break;
       case 'ADD_SOCKET_OSCILLATOR':
         //check if this user is in your state & create if not
-        if (!this.props.allCurrentUsers[data.payload.username]) {
-          let oscillatorGain = this.audioContext.createGain();
-          oscillatorGain.connect(this.masterGainNode);
-          this.props.addNewUser(data.payload.username, oscillatorGain)
-        }
+        // if (!this.props.allCurrentUsers[data.payload.username]) {
+        //   let oscillatorGain = this.audioContext.createGain();
+        //   oscillatorGain.connect(this.masterGainNode);
+        //   this.props.addNewUser(data.payload.username, oscillatorGain)
+        // }
 
         //create oscillator and save to state
         let osc = this.audioContext.createOscillator();
-        osc.connect(this.props.allCurrentUsers[data.payload.username].oscillatorGain);
+        console.log('osc:', osc);
+        console.log('allCurrentUsers:', this.props.allCurrentUsers);
+        console.log('oscGain:', this.props.allCurrentUsers[data.payload.username].signalProcessing.oscillatorGainNode);
+        osc.connect(this.props.allCurrentUsers[data.payload.username].signalProcessing.oscillatorGainNode);
         osc.type = data.payload.waveform
         osc.frequency.value = data.payload.frequency;
         osc.start();
@@ -386,7 +427,7 @@ class Synthroom extends Component {
       body: JSON.stringify({
         key: key,
         frequency: frequency,
-        waveform: this.props.currentPatchSettings.selectedWaveform,
+        waveform: this.props.allCurrentUsers[this.props.username].currentPatchSettings.selectedWaveform,
         username: this.props.username
       })
     })
@@ -435,18 +476,18 @@ class Synthroom extends Component {
             </select>
             <button id="saveButton" onClick={this.savePatch}>Save Patch</button>
             <button id="deleteButton" onClick={() => {
-              if (this.props.currentPatchSettings.id !== null) {
-                this.props.deletePatch(this.props.currentPatchSettings.id)
+              if (this.props.allCurrentUsers[this.props.username].currentPatchSettings.id !== null) {
+                this.props.deletePatch(this.props.allCurrentUsers[this.props.username].currentPatchSettings.id)
                 setTimeout(() => this.props.fetchAllPatches(), 100)
               }
             }}>Delete</button>
           </div>
           <div className="save-as-new">
             <button id="saveAsNewButton" onClick={() => {
-              this.props.createNewPatch(this.props.currentPatchSettings)
+              this.props.createNewPatch(this.props.allCurrentUsers[this.props.username].currentPatchSettings)
               setTimeout(() => this.props.fetchAllPatches(), 100)
             }}>Save As New</button>
-            <input id="name" type="text" defaultValue={this.props.currentPatchSettings.name} onChange={(event) => this.props.updatePatch(event.target.id, event.target.value)}/>
+            <input id="name" type="text" defaultValue={this.props.allCurrentUsers[this.props.username].currentPatchSettings.name} onChange={(event) => this.props.updatePatch(event.target.id, event.target.value)}/>
           </div>
         </div>
         <div className="master-gain-container">
@@ -475,7 +516,7 @@ class Synthroom extends Component {
             onChange={(event) => this.props.updatePatch(event.target.id, event.target.value)}/>
         </div> */}
         <div className="synthroom-info">
-          <span>Current Octave: {this.props.currentPatchSettings.currentOctave}</span>
+          <span>Current Octave: {this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave}</span>
           <p>Chord Mode: Soon™</p>
           <p>Current Room: {this.props.currentSynthroom.name}</p>
           <p>Username: {this.props.username}</p>
@@ -497,4 +538,4 @@ const mapStateToProps = (state) => {
   return {...state}
 }
 
-export default connect(mapStateToProps, { fetchAllPatches, loadPatch, updatePatch, createNewPatch, deletePatch, addActiveOscillator, removeActiveOscillator, addNewMessage, addNewUser, removeUser })(Synthroom)
+export default connect(mapStateToProps, { fetchAllPatches, loadPatch, updatePatch, createNewPatch, deletePatch, addActiveOscillator, removeActiveOscillator, addNewMessage, addUser, removeUser })(Synthroom)

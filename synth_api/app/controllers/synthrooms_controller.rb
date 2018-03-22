@@ -18,11 +18,25 @@ class SynthroomsController < ApplicationController
     end
   end
 
-  def add_new_user
+  def add_user
+    puts 'params in add_user:'
+    puts params
     synthroom = Synthroom.find(params[:id])
     SynthroomChannel.broadcast_to(synthroom, {
-      type: 'ADD_NEW_USER',
-      payload: params[:username]
+      type: 'ADD_USER',
+      payload: {
+        username: params[:username],
+        currentPatchSettings: params[:currentPatchSettings]
+      }
+    })
+  end
+
+  def retrieve_user_data
+    puts 'params in retrieve_user_data:'
+    puts params
+    synthroom = Synthroom.find(params[:id])
+    SynthroomChannel.broadcast_to(synthroom, {
+      type: 'RETRIEVE_USER_DATA',
     })
   end
 

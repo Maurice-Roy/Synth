@@ -12,7 +12,7 @@ class SynthroomContainer extends React.Component {
 	}
 
 	render = () => {
-		if (this.props.currentSynthroom){
+		if (this.props.currentSynthroom && this.props.username){
 			return <Synthroom/>
 		} else {
 			return <h1>Loading</h1>

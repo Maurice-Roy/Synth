@@ -2,7 +2,7 @@ class SynthroomChannel < ApplicationCable::Channel
   def subscribed
     synthroom = Synthroom.find(params[:synthroom_id])
     stream_for synthroom
-    puts "params on subscribe: #{params}"
+    # puts "params on subscribe: #{params}"
 
     # SynthroomChannel.broadcast_to(synthroom, {
     #   type: 'ADD_NEW_USER',

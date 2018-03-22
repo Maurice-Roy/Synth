@@ -10,7 +10,8 @@ import DummyComponent from './DummyComponent'
 class App extends Component {
 
   state = {
-    newSynthroomInput: null
+    newSynthroomInput: null,
+    usernameInput: null
   }
 
   componentDidMount = () => {
@@ -32,6 +33,10 @@ class App extends Component {
     .then((synthroom) => this.props.history.push(`/synthrooms/${synthroom.id}`) )
   }
 
+  handleSetUsername = () => {
+    this.props.setUsername(this.state.usernameInput)
+  }
+
   render() {
     return (
       <div>
@@ -39,7 +44,8 @@ class App extends Component {
           //create a component for this select
           return(
             <div>
-              <input type="text" placeholder="enter username..." onChange={(event) => this.props.setUsername(event.target.value)}/>
+              <input type="text" placeholder="enter username..." value={this.state.usernameInput} onChange={(event) => this.setState({usernameInput: event.target.value})}/>
+              <button onClick={this.handleSetUsername}>Set Username</button>
               <br/>
               <select name="roomSelect" id="roomSelect" onChange={this.handleSelect}>
                 <option disabled selected value>select existing room</option>

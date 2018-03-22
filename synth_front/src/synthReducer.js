@@ -1,17 +1,39 @@
+// const oldState = {
+//   currentPatchSettings: {
+//     id: null,
+//     name: 'Default',
+//     selectedWaveform: 'square',
+//     masterGain: 0.5,
+//     currentOctave: 4
+//   },
+//   activeOscillators: {},
+//   allPatches: [],
+//   allSynthrooms: [],
+//   currentSynthroom: null,
+//   username: 'Anonymous',
+//   allCurrentUsers: {}
+// }
 const defaultState = {
-  currentPatchSettings: {
-    id: null,
-    name: 'Default',
-    selectedWaveform: 'square',
-    masterGain: 0.5,
-    currentOctave: 4
-  },
   activeOscillators: {},
   allPatches: [],
   allSynthrooms: [],
   currentSynthroom: null,
   username: 'Anonymous',
-  allCurrentUsers: {}
+  allCurrentUsers: {
+    Anonymous: {
+      currentPatchSettings: {
+        id: null,
+        name: 'Default',
+        selectedWaveform: 'square',
+        masterGain: 0.5,
+        currentOctave: 4,
+        oscillatorGainNodeValue: 0.5
+      },
+      signalProcessing: {
+        oscillatorGainNode: null,
+      }
+    }
+  }
 }
 
 export default function synthReducer (state = defaultState, action) {
@@ -89,7 +111,23 @@ export default function synthReducer (state = defaultState, action) {
     case 'SET_USERNAME':
       return {
         ...state,
-        username: action.payload
+        username: action.payload,
+        allCurrentUsers: {
+          ...state.allCurrentUsers,
+          [action.payload]: {
+            currentPatchSettings: {
+              id: null,
+              name: 'Default',
+              selectedWaveform: 'square',
+              masterGain: 0.5,
+              currentOctave: 4,
+              oscillatorGainNodeValue: 0.5
+            },
+            signalProcessing: {
+              oscillatorGainNode: null,
+            }
+          }
+        }
       }
       break;
     case 'ADD_NEW_MESSAGE':
@@ -104,7 +142,7 @@ export default function synthReducer (state = defaultState, action) {
         }
       }
       break;
-    case 'ADD_NEW_USER':
+    case 'ADD_USER':
       return {
         ...state,
         activeOscillators: {
@@ -113,10 +151,7 @@ export default function synthReducer (state = defaultState, action) {
         },
         allCurrentUsers: {
           ...state.allCurrentUsers,
-          [action.payload.username]: {
-            // add user's signal processing here
-            oscillatorGain: action.payload.oscillatorGain
-          }
+          [action.payload.username]: action.payload.newUser
         }
       }
       break;
