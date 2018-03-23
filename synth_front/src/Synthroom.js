@@ -8,19 +8,6 @@ import bottomKeyboard from './bottom_keyboard.svg'
 import './Synthroom.css';
 
 class Synthroom extends Component {
-  // constructor(props) {
-  //   super(props)
-  //   this.state = {
-  //     messageInput: ''
-  //   }
-  //
-  //   let url = window.location.href
-  //   let synthroomID = url.split('/')[4]
-  //
-  //   fetch(`http://192.168.4.168:3000/synthrooms/${synthroomID}/retrieve_user_data`, {
-  //     method: "POST"
-  //   })
-  // }
 
   state = {
     messageInput: ''
@@ -274,21 +261,11 @@ class Synthroom extends Component {
     } else if (Object.keys(this.noteKeyboardAssociations).includes(key)) { // if key is a note - octave 1
       let note = this.noteKeyboardAssociations[key]
       let frequency = this.noteFreq[this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave][note]
-      // if (this.props.activeOscillators[this.props.username][key]) { //if this note is playing, stop it
-        //also remove from activeOscillators array
-        // this.props.activeOscillators[this.props.username][key].stop()
-        // this.props.removeActiveOscillator(key, this.props.username)
-        this.handleRemoveNotes(key)
-      // }
+      this.handleRemoveNotes(key)
     } else if (Object.keys(this.noteKeyboardAssociations2ndOctave).includes(key)) { // if key is a note - octave 2
       let note = this.noteKeyboardAssociations2ndOctave[key]
       let frequency = this.noteFreq[this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave + 1][note]
-      // if (this.props.activeOscillators[this.props.username][key]) { //if this note is playing, stop it
-        //also remove from activeOscillators array
-        // this.props.activeOscillators[this.props.username][key].stop()
-        // this.props.removeActiveOscillator(key, this.props.username)
-        this.handleRemoveNotes(key)
-      // }
+      this.handleRemoveNotes(key)
     }
   }
 
@@ -364,13 +341,6 @@ class Synthroom extends Component {
         this.props.removeUser(data.payload)
         break;
       case 'ADD_SOCKET_OSCILLATOR':
-        //check if this user is in your state & create if not
-        // if (!this.props.allCurrentUsers[data.payload.username]) {
-        //   let oscillatorGain = this.audioContext.createGain();
-        //   oscillatorGain.connect(this.masterGainNode);
-        //   this.props.addNewUser(data.payload.username, oscillatorGain)
-        // }
-
         //create oscillator and save to state
         let osc = this.audioContext.createOscillator();
         console.log('osc:', osc);
@@ -382,13 +352,6 @@ class Synthroom extends Component {
         osc.start();
         this.props.addActiveOscillator(data.payload.key, osc, data.payload.username)
         break;
-        // let osc = this.audioContext.createOscillator();
-        // osc.connect(this.masterGainNode);
-        // osc.type = data.payload.waveform
-        // osc.frequency.value = data.payload.frequency;
-        // osc.start();
-        // this.props.addActiveOscillator(data.payload.key, osc, data.payload.username)
-        // break;
       case 'REMOVE_SOCKET_OSCILLATOR':
         if (this.props.activeOscillators[data.payload.username] && this.props.activeOscillators[data.payload.username][data.payload.key])
           this.props.activeOscillators[data.payload.username][data.payload.key].stop()

@@ -1,18 +1,3 @@
-// const oldState = {
-//   currentPatchSettings: {
-//     id: null,
-//     name: 'Default',
-//     selectedWaveform: 'square',
-//     masterGain: 0.5,
-//     currentOctave: 4
-//   },
-//   activeOscillators: {},
-//   allPatches: [],
-//   allSynthrooms: [],
-//   currentSynthroom: null,
-//   username: 'Anonymous',
-//   allCurrentUsers: {}
-// }
 const defaultState = {
   activeOscillators: {},
   allPatches: [],

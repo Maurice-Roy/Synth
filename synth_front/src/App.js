@@ -5,8 +5,6 @@ import { ActionCable } from 'react-actioncable-provider'
 import SynthroomContainer from './SynthroomContainer'
 import { Route, Switch, withRouter } from 'react-router-dom'
 
-import DummyComponent from './DummyComponent'
-
 class App extends Component {
 
   state = {
@@ -54,7 +52,6 @@ class App extends Component {
               <span> or </span>
               <input type="text" placeholder="enter new room name..." value={this.state.newSynthroomInput} onChange={(event) => this.setState({newSynthroomInput: event.target.value})}/>
               <button onClick={this.handleCreate}>Create</button>
-              <button onClick={(event) => {this.props.history.push(`/dummycomponent/7`)}}>DUMMY</button>
             </div>
           )
         }}/>
@@ -62,11 +59,6 @@ class App extends Component {
 
           // return <div>{routerProps.match.params.id}</div>
           return <SynthroomContainer {...routerProps}/>
-        }}/>
-        <Route path="/dummycomponent/7" render={(routerProps) => {
-
-          // return <div>{routerProps.match.params.id}</div>
-          return <DummyComponent {...routerProps}/>
         }}/>
       </div>
 
