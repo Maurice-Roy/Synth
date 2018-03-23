@@ -55,6 +55,21 @@ class SynthroomsController < ApplicationController
     end
   end
 
+  def load_patch
+    puts 'params in load_patch:'
+    puts params
+    synthroom = Synthroom.find(params[:id])
+    if synthroom
+      SynthroomChannel.broadcast_to(synthroom, {
+        type: 'LOAD_PATCH',
+        payload: prepare_patch_load(params)
+      })
+      render json: prepare_patch_load(params)
+    else
+      render json: {error: 'There was an error loading the patch!'}
+    end
+  end
+
   def add_message
     synthroom = Synthroom.find(params[:id])
     if synthroom
@@ -100,6 +115,20 @@ class SynthroomsController < ApplicationController
       username: params[:username],
       synthParameter: params[:synthParameter],
       value: params[:value]
+    }
+  end
+
+  def prepare_patch_load(params)
+    patch_load_hash = {
+      username: params[:username],
+      patch: params[:patch],
+      id: params[:patch][:id],
+      name: params[:patch][:name],
+      selectedWaveform: params[:patch][:selected_waveform],
+      masterGain: params[:patch][:master_gain],
+      currentOctave: params[:patch][:current_octave],
+      oscillatorGainNodeValue: params[:patch][:oscillator_gain_node_value]
+      # add more signal processng values here
     }
   end
 

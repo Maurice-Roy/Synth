@@ -28,10 +28,10 @@ export const fetchAllPatches = () => {
   }
 }
 
-export const loadPatch = (patch) => {
+export const loadPatch = (username, patch) => {
   return {
     type: LOAD_PATCH,
-    payload: patch
+    payload: {username, patch}
   }
 }
 
@@ -42,13 +42,13 @@ export const updatePatch = (username, synthParameter, value) => {
   }
 }
 
-export const createNewPatch = (currentPatchSettings) => {
-  let newPatchSettings = {
-    name: currentPatchSettings.name,
-    selectedWaveform: currentPatchSettings.selectedWaveform,
-    masterGain: currentPatchSettings.masterGain,
-    currentOctave: currentPatchSettings.currentOctave
-  }
+export const createNewPatch = (username, currentPatchSettings) => {
+  // let newPatchSettings = {
+  //   name: currentPatchSettings.name,
+  //   selectedWaveform: currentPatchSettings.selectedWaveform,
+  //   masterGain: currentPatchSettings.masterGain,
+  //   currentOctave: currentPatchSettings.currentOctave
+  // }
 
   return function(dispatch){
     fetch('http://192.168.4.168:3000/patches',{
@@ -56,11 +56,11 @@ export const createNewPatch = (currentPatchSettings) => {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(newPatchSettings)
+      body: JSON.stringify(currentPatchSettings)
     })
     .then(res => res.json())
     .then(patch => {
-      dispatch({type: CREATE_NEW_PATCH, payload: patch})
+      dispatch({type: CREATE_NEW_PATCH, payload: {username, patch}})
     })
   }
 }

@@ -32,12 +32,19 @@ export default function synthReducer (state = defaultState, action) {
     case 'LOAD_PATCH':
       return {
         ...state,
-        currentPatchSettings: {
-          id: action.payload.id,
-          name: action.payload.name,
-          selectedWaveform: action.payload.selected_waveform,
-          masterGain: action.payload.master_gain,
-          currentOctave: action.payload.current_octave
+        allCurrentUsers: {
+          ...state.allCurrentUsers,
+          [action.payload.username]: {
+            ...state.allCurrentUsers[action.payload.username],
+            currentPatchSettings: {
+              id: action.payload.patch.id,
+              name: action.payload.patch.name,
+              selectedWaveform: action.payload.patch.selected_waveform,
+              masterGain: action.payload.patch.master_gain,
+              currentOctave: action.payload.patch.current_octave,
+              oscillatorGainNodeValue: action.payload.patch.oscillator_gain_node_value
+            }
+          }
         }
       }
       break;
@@ -60,12 +67,19 @@ export default function synthReducer (state = defaultState, action) {
     case 'CREATE_NEW_PATCH':
       return {
         ...state,
-        currentPatchSettings: {
-          id: action.payload.id,
-          name: action.payload.name,
-          selectedWaveform: action.payload.selected_waveform,
-          masterGain: action.payload.master_gain,
-          currentOctave: action.payload.current_octave
+        allCurrentUsers: {
+          ...state.allCurrentUsers,
+          [action.payload.username]: {
+            ...state.allCurrentUsers[action.payload.username],
+            currentPatchSettings: {
+              id: action.payload.patch.id,
+              name: action.payload.patch.name,
+              selectedWaveform: action.payload.patch.selected_waveform,
+              masterGain: action.payload.patch.master_gain,
+              currentOctave: action.payload.patch.current_octave,
+              oscillatorGainNodeValue: action.payload.patch.oscillator_gain_node_value
+            }
+          }
         }
       }
       break;

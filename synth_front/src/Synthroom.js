@@ -146,7 +146,14 @@ class Synthroom extends Component {
     this.wavePicker = this.refs.waveformSelect
     this.volumeControl = this.refs.masterGain
     this.noteFreq = null;
-    this.defaultPatch = {id: null, name: 'Default', selected_waveform: "square", master_gain: 0.5, current_octave: 4}
+    this.defaultPatch = {
+      id: null,
+      name: 'Default',
+      selected_waveform: 'square',
+      master_gain: 0.5,
+      current_octave: 4,
+      oscillator_gain_node_value: 0.5
+    }
 
     //initial fetch for patches from the backend
     this.props.fetchAllPatches()
@@ -355,6 +362,17 @@ class Synthroom extends Component {
         }
         this.props.updatePatch(data.payload.username, data.payload.synthParameter, data.payload.value)
         break;
+      case 'LOAD_PATCH':
+        // connect signal processing values here:
+        //oscillatorGainNode:
+        this.props.allCurrentUsers[data.payload.username].signalProcessing.oscillatorGainNode.gain.value = data.payload.oscillatorGainNodeValue
+        //filter:
+
+        //ASDR:
+
+
+        this.props.loadPatch(data.payload.username, data.payload.patch)
+        break;
       case 'ADD_SOCKET_OSCILLATOR':
         //create oscillator and save to state
         let osc = this.audioContext.createOscillator();
@@ -438,6 +456,19 @@ class Synthroom extends Component {
     })
   }
 
+  handlePatchLoad = (patch) => {
+    fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/load_patch`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        username: this.props.username,
+        patch: patch
+      })
+    })
+  }
+
   render() {
     console.log('props in synthroom',this.props);
     return (
@@ -461,7 +492,7 @@ class Synthroom extends Component {
               } else {
                 selectedPatch = this.defaultPatch
               }
-              this.props.loadPatch(selectedPatch)
+              this.handlePatchLoad(selectedPatch)
             }}>
               <option value="Default">Default</option>
               {this.listPatches()}
@@ -476,7 +507,7 @@ class Synthroom extends Component {
           </div>
           <div className="save-as-new">
             <button id="saveAsNewButton" onClick={() => {
-              this.props.createNewPatch(this.props.allCurrentUsers[this.props.username].currentPatchSettings)
+              this.props.createNewPatch(this.props.username, this.props.allCurrentUsers[this.props.username].currentPatchSettings)
               setTimeout(() => this.props.fetchAllPatches(), 100)
             }}>Save As New</button>
             <input id="name" type="text" defaultValue={this.props.allCurrentUsers[this.props.username].currentPatchSettings.name} onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/>
@@ -494,7 +525,7 @@ class Synthroom extends Component {
         </div>
         <div className="waveform-select-container">
           <span>Waveform: </span>
-          <select name="waveform" ref="waveformSelect" id="selectedWaveform" onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}>
+          <select name="waveform" value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.selectedWaveform} ref="waveformSelect" id="selectedWaveform" onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}>
             <option value="sine">Sine</option>
             <option value="square" selected>Square</option>
             <option value="sawtooth">Sawtooth</option>
@@ -504,7 +535,7 @@ class Synthroom extends Component {
         <div className="patch-settings">
           <span>Oscillator Gain: </span>
           <input id="oscillatorGainNodeValue" type="range" min="0.0" max="1.0" step="0.01"
-              defaultValue="0.5" list="volumes" name="volume" ref="oscillatorGainNodeValue"
+              defaultValue="0.5" value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.oscillatorGainNodeValue} list="volumes" name="volume" ref="oscillatorGainNodeValue"
             onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
           <span>Current Octave: {this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave}</span>
         </div>
