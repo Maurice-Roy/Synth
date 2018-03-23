@@ -43,15 +43,8 @@ export const updatePatch = (username, synthParameter, value) => {
 }
 
 export const createNewPatch = (username, currentPatchSettings) => {
-  // let newPatchSettings = {
-  //   name: currentPatchSettings.name,
-  //   selectedWaveform: currentPatchSettings.selectedWaveform,
-  //   masterGain: currentPatchSettings.masterGain,
-  //   currentOctave: currentPatchSettings.currentOctave
-  // }
-
   return function(dispatch){
-    fetch('http://192.168.4.168:3000/patches',{
+    return fetch('http://192.168.4.168:3000/patches',{
       method: "POST",
       headers: {
         "Content-Type": "application/json"

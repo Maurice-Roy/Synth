@@ -16,6 +16,10 @@ class App extends Component {
     this.props.fetchAllSynthrooms()
   }
 
+  componentDidCatch = (error, info) => {
+    this.props.history.push(`/`)
+  }
+
   listSynthrooms = () => {
     return this.props.allSynthrooms.map((synthroom) => {
       return (<option value={synthroom.id} key={synthroom.id} id={synthroom.id}>{synthroom.name}</option>)

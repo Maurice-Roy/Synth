@@ -208,6 +208,7 @@ class Synthroom extends Component {
 
   //FIXME - this is where the master gain slider is mapped to the state
   componentWillReceiveProps = (nextProps) => {
+    console.log(nextProps);
     //does this turn into a massive switch statement for each parameter?
     this.refs.masterGain.value = nextProps.allCurrentUsers[this.props.username].currentPatchSettings.masterGain
     // this.refs.waveformSelect.value = nextProps.allCurrentUsers[this.props.username].currentPatchSettings.selectedWaveform
@@ -508,9 +509,9 @@ class Synthroom extends Component {
           <div className="save-as-new">
             <button id="saveAsNewButton" onClick={() => {
               this.props.createNewPatch(this.props.username, this.props.allCurrentUsers[this.props.username].currentPatchSettings)
-              setTimeout(() => this.props.fetchAllPatches(), 100)
+              .then(() => this.props.fetchAllPatches())
             }}>Save As New</button>
-            <input id="name" type="text" defaultValue={this.props.allCurrentUsers[this.props.username].currentPatchSettings.name} onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/>
+            <input id="name" type="text" value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.name} onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/>
           </div>
         </div>
         <div className="master-gain-container">

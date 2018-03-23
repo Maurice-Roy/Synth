@@ -10,6 +10,8 @@ class PatchesController < ApplicationController
   end
 
   def create
+    puts '*****params in patch#create:'
+    puts params
     @patch = Patch.create(name: params[:name], selected_waveform: params[:selectedWaveform], master_gain: params[:masterGain], current_octave: params[:currentOctave], oscillator_gain_node_value: params[:oscillatorGainNodeValue])
     render json: @patch
   end
