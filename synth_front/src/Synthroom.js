@@ -203,7 +203,7 @@ class Synthroom extends Component {
   componentWillReceiveProps = (nextProps) => {
     //does this turn into a massive switch statement for each parameter?
     this.refs.masterGain.value = nextProps.allCurrentUsers[this.props.username].currentPatchSettings.masterGain
-    this.refs.waveformSelect.value = nextProps.allCurrentUsers[this.props.username].currentPatchSettings.selectedWaveform
+    // this.refs.waveformSelect.value = nextProps.allCurrentUsers[this.props.username].currentPatchSettings.selectedWaveform
 
     this.masterGainNode.gain.value = nextProps.allCurrentUsers[this.props.username].currentPatchSettings.masterGain
 
@@ -222,13 +222,15 @@ class Synthroom extends Component {
         case '219':
           if (this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave > 0) {
             let newOctave = this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave -= 1
-            this.props.updatePatch('currentOctave', newOctave)
+            console.log(newOctave);
+            this.sendPatchUpdate(this.props.username, 'currentOctave', newOctave)
           }
           break;
         case '221':
           if (this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave < 7) {
             let newOctave = this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave += 1
-            this.props.updatePatch('currentOctave', newOctave)
+            console.log(newOctave);
+            this.sendPatchUpdate(this.props.username, 'currentOctave', newOctave)
           }
           break;
         case '220':
@@ -340,6 +342,19 @@ class Synthroom extends Component {
         //  -signal processing for user (in state)
         this.props.removeUser(data.payload)
         break;
+      case 'UPDATE_PATCH':
+        // massive switch statement here for setting signalProcessing values:
+        switch (data.payload.synthParameter){
+          case 'oscillatorGainNodeValue':
+            console.log('UPDATING oscillatorGainNode')
+            this.props.allCurrentUsers[data.payload.username].signalProcessing.oscillatorGainNode.gain.value = data.payload.value
+            break;
+          default:
+            console.log('Hit default in UPDATE_PATCH switch')
+            break;
+        }
+        this.props.updatePatch(data.payload.username, data.payload.synthParameter, data.payload.value)
+        break;
       case 'ADD_SOCKET_OSCILLATOR':
         //create oscillator and save to state
         let osc = this.audioContext.createOscillator();
@@ -409,6 +424,20 @@ class Synthroom extends Component {
     })
   }
 
+  sendPatchUpdate = (username, synthParameter, value) => {
+    fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/update_patch`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        username: username,
+        synthParameter: synthParameter,
+        value: value
+      })
+    })
+  }
+
   render() {
     console.log('props in synthroom',this.props);
     return (
@@ -450,14 +479,14 @@ class Synthroom extends Component {
               this.props.createNewPatch(this.props.allCurrentUsers[this.props.username].currentPatchSettings)
               setTimeout(() => this.props.fetchAllPatches(), 100)
             }}>Save As New</button>
-            <input id="name" type="text" defaultValue={this.props.allCurrentUsers[this.props.username].currentPatchSettings.name} onChange={(event) => this.props.updatePatch(event.target.id, event.target.value)}/>
+            <input id="name" type="text" defaultValue={this.props.allCurrentUsers[this.props.username].currentPatchSettings.name} onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/>
           </div>
         </div>
         <div className="master-gain-container">
           <span>Master Volume: </span>
           <input id="masterGain" type="range" min="0.0" max="1.0" step="0.01"
               defaultValue="0.5" list="volumes" name="volume" ref="masterGain"
-            onChange={(event) => this.props.updatePatch(event.target.id, event.target.value)}/>
+            onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/>
           {/* <datalist id="volumes">
             <option value="0.0" label="Mute"/>
             <option value="1.0" label="100%"/>
@@ -465,26 +494,27 @@ class Synthroom extends Component {
         </div>
         <div className="waveform-select-container">
           <span>Waveform: </span>
-          <select name="waveform" ref="waveformSelect" id="selectedWaveform" onChange={(event) => this.props.updatePatch(event.target.id, event.target.value)}>
+          <select name="waveform" ref="waveformSelect" id="selectedWaveform" onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}>
             <option value="sine">Sine</option>
             <option value="square" selected>Square</option>
             <option value="sawtooth">Sawtooth</option>
             <option value="triangle">Triangle</option>
           </select>
         </div>
-        {/* <div className="patch-settings">
+        <div className="patch-settings">
           <span>Oscillator Gain: </span>
-          <input id="oscillatorGain" type="range" min="0.0" max="1.0" step="0.01"
-              defaultValue="0.5" list="volumes" name="volume" ref="oscillatorGain"
-            onChange={(event) => this.props.updatePatch(event.target.id, event.target.value)}/>
-        </div> */}
-        <div className="synthroom-info">
+          <input id="oscillatorGainNodeValue" type="range" min="0.0" max="1.0" step="0.01"
+              defaultValue="0.5" list="volumes" name="volume" ref="oscillatorGainNodeValue"
+            onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
           <span>Current Octave: {this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave}</span>
+        </div>
+        <div className="synthroom-info">
           <p>Chord Mode: Soon™</p>
           <p>Current Room: {this.props.currentSynthroom.name}</p>
           <p>Username: {this.props.username}</p>
         </div>
         <div id="chat">
+          <span>---------------</span><br/>
           {this.displayMessages()}
           {/* form for new messages */}
           <input type="text" placeholder="enter a message..." value={this.state.messageInput} onChange={(event) => this.setState({messageInput: event.target.value})}/>

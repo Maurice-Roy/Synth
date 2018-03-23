@@ -42,11 +42,19 @@ export default function synthReducer (state = defaultState, action) {
       }
       break;
     case 'UPDATE_PATCH':
-      let newPatchSettings = {...state.currentPatchSettings}
-      newPatchSettings[action.payload.synthParameter] = action.payload.data
+      console.log('action in UPDATE_PATCH:', action);
       return {
         ...state,
-        currentPatchSettings: newPatchSettings
+        allCurrentUsers: {
+          ...state.allCurrentUsers,
+          [action.payload.username]: {
+            ...state.allCurrentUsers[action.payload.username],
+            currentPatchSettings: {
+              ...state.allCurrentUsers[action.payload.username].currentPatchSettings,
+              [action.payload.synthParameter]: action.payload.value
+            }
+          }
+        }
       }
       break;
     case 'CREATE_NEW_PATCH':

@@ -36,8 +36,23 @@ class SynthroomsController < ApplicationController
     puts params
     synthroom = Synthroom.find(params[:id])
     SynthroomChannel.broadcast_to(synthroom, {
-      type: 'RETRIEVE_USER_DATA',
+      type: 'RETRIEVE_USER_DATA'
     })
+  end
+
+  def update_patch
+    puts 'params in update_patch:'
+    puts params
+    synthroom = Synthroom.find(params[:id])
+    if synthroom
+      SynthroomChannel.broadcast_to(synthroom, {
+        type: 'UPDATE_PATCH',
+        payload: prepare_patch_update(params)
+      })
+      render json: prepare_patch_update(params)
+    else
+      render json: {error: 'There was an error updating the patch!'}
+    end
   end
 
   def add_message
@@ -78,6 +93,14 @@ class SynthroomsController < ApplicationController
     else
       render json: {error: 'There was an error removing your note!'}
     end
+  end
+
+  def prepare_patch_update(params)
+    update_hash = {
+      username: params[:username],
+      synthParameter: params[:synthParameter],
+      value: params[:value]
+    }
   end
 
   def prepare_add_note_data(params)

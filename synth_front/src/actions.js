@@ -35,10 +35,10 @@ export const loadPatch = (patch) => {
   }
 }
 
-export const updatePatch = (synthParameter, data) => {
+export const updatePatch = (username, synthParameter, value) => {
   return {
     type: UPDATE_PATCH,
-    payload: {synthParameter, data}
+    payload: {username, synthParameter, value}
   }
 }
 
