@@ -9,7 +9,6 @@ const REMOVE_ACTIVE_OSCILLATOR = 'REMOVE_ACTIVE_OSCILLATOR'
 
 const FETCH_ALL_SYNTHROOMS = 'FETCH_ALL_SYNTHROOMS'
 const LOAD_SYNTHROOM = 'LOAD_SYNTHROOM'
-const CREATE_NEW_SYNTHROOM = 'CREATE_NEW_SYNTHROOM'
 
 const SET_USERNAME = 'SET_USERNAME'
 
@@ -20,7 +19,7 @@ const REMOVE_USER = 'REMOVE_USER'
 
 export const fetchAllPatches = () => {
   return function(dispatch){
-    fetch('http://192.168.4.168:3000/patches')
+    fetch('http://192.168.1.159:3000/patches')
     .then(res => res.json())
     .then(patches => {
       dispatch({type: FETCH_ALL_PATCHES, payload: patches})
@@ -44,7 +43,7 @@ export const updatePatch = (username, synthParameter, value) => {
 
 export const createNewPatch = (username, currentPatchSettings) => {
   return function(dispatch){
-    return fetch('http://192.168.4.168:3000/patches',{
+    return fetch('http://192.168.1.159:3000/patches',{
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -60,7 +59,7 @@ export const createNewPatch = (username, currentPatchSettings) => {
 
 export const deletePatch = (patchID) => {
   return function(dispatch){
-    fetch(`http://192.168.4.168:3000/patches/${patchID}`,{
+    fetch(`http://192.168.1.159:3000/patches/${patchID}`,{
       method: "DELETE",
     })
     .then(() => {
@@ -85,7 +84,7 @@ export const removeActiveOscillator = (key, username) => {
 
 export const fetchAllSynthrooms = () => {
   return function(dispatch){
-    fetch('http://192.168.4.168:3000/synthrooms')
+    fetch('http://192.168.1.159:3000/synthrooms')
     .then(res => res.json())
     .then(synthrooms => {
       dispatch({type: FETCH_ALL_SYNTHROOMS, payload: synthrooms})
@@ -95,7 +94,7 @@ export const fetchAllSynthrooms = () => {
 
 export const loadSynthroom = (synthroomID) => {
   return function(dispatch){
-    fetch(`http://192.168.4.168:3000/synthrooms/${synthroomID}`)
+    fetch(`http://192.168.1.159:3000/synthrooms/${synthroomID}`)
 		.then(res => res.json())
 		.then(synthroom => {
       console.log(synthroom)
@@ -110,7 +109,7 @@ export const loadSynthroom = (synthroomID) => {
 export const createNewSynthroom = (synthroomName) => {
   console.log(synthroomName);
   return function(dispatch){
-    return fetch(`http://192.168.4.168:3000/synthrooms/`, {
+    return fetch(`http://192.168.1.159:3000/synthrooms/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

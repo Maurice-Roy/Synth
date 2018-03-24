@@ -1,3 +1,4 @@
+let newState
 const defaultState = {
   activeOscillators: {},
   allPatches: [],
@@ -18,7 +19,8 @@ const defaultState = {
         oscillatorGainNode: null,
       }
     }
-  }
+  },
+  newYork: 'mind'
 }
 
 export default function synthReducer (state = defaultState, action) {
@@ -28,7 +30,6 @@ export default function synthReducer (state = defaultState, action) {
         ...state,
         allPatches: action.payload
       }
-      break;
     case 'LOAD_PATCH':
       return {
         ...state,
@@ -47,7 +48,6 @@ export default function synthReducer (state = defaultState, action) {
           }
         }
       }
-      break;
     case 'UPDATE_PATCH':
       console.log('action in UPDATE_PATCH:', action);
       return {
@@ -63,7 +63,6 @@ export default function synthReducer (state = defaultState, action) {
           }
         }
       }
-      break;
     case 'CREATE_NEW_PATCH':
       return {
         ...state,
@@ -82,10 +81,8 @@ export default function synthReducer (state = defaultState, action) {
           }
         }
       }
-      break;
     case 'DELETE_PATCH':
       return defaultState
-      break;
     case 'ADD_ACTIVE_OSCILLATOR':
       return {
         ...state,
@@ -97,24 +94,20 @@ export default function synthReducer (state = defaultState, action) {
           }
         }
       }
-      break;
     case 'REMOVE_ACTIVE_OSCILLATOR':
-      var newState = {...state}
+      newState = {...state}
       delete newState.activeOscillators[action.payload.username][action.payload.key]
       return newState
-      break;
     case 'FETCH_ALL_SYNTHROOMS':
       return {
         ...state,
         allSynthrooms: action.payload
       }
-      break;
     case 'LOAD_SYNTHROOM':
       return {
         ...state,
         currentSynthroom: action.payload,
       }
-      break;
     case 'SET_USERNAME':
       return {
         ...state,
@@ -136,7 +129,6 @@ export default function synthReducer (state = defaultState, action) {
           }
         }
       }
-      break;
     case 'ADD_NEW_MESSAGE':
       return {
         ...state,
@@ -148,7 +140,6 @@ export default function synthReducer (state = defaultState, action) {
           ]
         }
       }
-      break;
     case 'ADD_USER':
       return {
         ...state,
@@ -161,14 +152,11 @@ export default function synthReducer (state = defaultState, action) {
           [action.payload.username]: action.payload.newUser
         }
       }
-      break;
     case 'REMOVE_USER':
-      var newState = {...state}
+      newState = {...state}
       delete newState.allCurrentUsers[action.payload]
       return newState
-      break;
     default:
       return state
-      break;
   }
 }

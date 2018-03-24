@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import { fetchAllSynthrooms, createNewSynthroom, setUsername } from './actions'
-import { ActionCable } from 'react-actioncable-provider'
 import SynthroomContainer from './SynthroomContainer'
-import { Route, Switch, withRouter } from 'react-router-dom'
+import { Route, withRouter } from 'react-router-dom'
 
 class App extends Component {
 

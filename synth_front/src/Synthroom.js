@@ -3,8 +3,8 @@ import { connect } from 'react-redux'
 import { fetchAllPatches, loadPatch, updatePatch, createNewPatch, deletePatch, addActiveOscillator, removeActiveOscillator, addNewMessage, addUser, removeUser } from './actions'
 import { ActionCable } from 'react-actioncable-provider'
 import logo from './scull4.png';
-import topKeyboard from './top_keyboard.svg'
-import bottomKeyboard from './bottom_keyboard.svg'
+// import topKeyboard from './top_keyboard.svg'
+// import bottomKeyboard from './bottom_keyboard.svg'
 import './Synthroom.css';
 
 class Synthroom extends Component {
@@ -216,7 +216,7 @@ class Synthroom extends Component {
     this.masterGainNode.gain.value = nextProps.allCurrentUsers[this.props.username].currentPatchSettings.masterGain
 
     if(nextProps.allCurrentUsers[nextProps.username] && !nextProps.allCurrentUsers[nextProps.username].signalProcessing.oscillatorGainNode){
-      fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/retrieve_user_data`, {
+      fetch(`http://192.168.1.159:3000/synthrooms/${this.props.currentSynthroom.id}/retrieve_user_data`, {
         method: "POST"
       })
     }
@@ -244,6 +244,9 @@ class Synthroom extends Component {
         case '220':
           //toggle chord mode
           break;
+        default:
+          console.log('Hit default case in controls array switch.');
+          break;
       }
     } else if (Object.keys(this.noteKeyboardAssociations).includes(key)) { // if key is a note - octave 1
       let note = this.noteKeyboardAssociations[key]
@@ -269,12 +272,8 @@ class Synthroom extends Component {
     if (this.controlsArray.includes(key)) {
       //if key is [ or ] or \
     } else if (Object.keys(this.noteKeyboardAssociations).includes(key)) { // if key is a note - octave 1
-      let note = this.noteKeyboardAssociations[key]
-      let frequency = this.noteFreq[this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave][note]
       this.handleRemoveNotes(key)
     } else if (Object.keys(this.noteKeyboardAssociations2ndOctave).includes(key)) { // if key is a note - octave 2
-      let note = this.noteKeyboardAssociations2ndOctave[key]
-      let frequency = this.noteFreq[this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave + 1][note]
       this.handleRemoveNotes(key)
     }
   }
@@ -287,7 +286,7 @@ class Synthroom extends Component {
 
   savePatch = () => {
     if (this.props.allCurrentUsers[this.props.username].currentPatchSettings.id !== null) {
-      fetch(`http://192.168.4.168:3000/patches/${this.props.allCurrentUsers[this.props.username].currentPatchSettings.id}`, {
+      fetch(`http://192.168.1.159:3000/patches/${this.props.allCurrentUsers[this.props.username].currentPatchSettings.id}`, {
 				method: "PATCH",
 				headers: {
 					'Content-Type': 'application/json'
@@ -312,7 +311,7 @@ class Synthroom extends Component {
       case 'RETRIEVE_USER_DATA':
         //collect all other current user's name and patch state, & create their signal processing
         console.log('ABOUT TO RETRIEVE_USER_DATA');
-        fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/add_user`, {
+        fetch(`http://192.168.1.159:3000/synthrooms/${this.props.currentSynthroom.id}/add_user`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
@@ -402,7 +401,7 @@ class Synthroom extends Component {
 
   handleSendMessage = (messageInput) => {
     //send message to back end here
-    fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/add_message`, {
+    fetch(`http://192.168.1.159:3000/synthrooms/${this.props.currentSynthroom.id}/add_message`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -416,7 +415,7 @@ class Synthroom extends Component {
   }
 
   handleSendNotes = (key, frequency) => {
-    fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/send_notes`, {
+    fetch(`http://192.168.1.159:3000/synthrooms/${this.props.currentSynthroom.id}/send_notes`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -431,7 +430,7 @@ class Synthroom extends Component {
   }
 
   handleRemoveNotes = (key) => {
-    fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/remove_notes`, {
+    fetch(`http://192.168.1.159:3000/synthrooms/${this.props.currentSynthroom.id}/remove_notes`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -444,7 +443,7 @@ class Synthroom extends Component {
   }
 
   sendPatchUpdate = (username, synthParameter, value) => {
-    fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/update_patch`, {
+    fetch(`http://192.168.1.159:3000/synthrooms/${this.props.currentSynthroom.id}/update_patch`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -458,7 +457,7 @@ class Synthroom extends Component {
   }
 
   handlePatchLoad = (patch) => {
-    fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/load_patch`, {
+    fetch(`http://192.168.1.159:3000/synthrooms/${this.props.currentSynthroom.id}/load_patch`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -488,7 +487,7 @@ class Synthroom extends Component {
             <select name="patches" id="patchSelect" defaultValue="Default" onChange={(event) => {
               let selectedPatch
               if (event.target[event.target.selectedIndex].value !== "Default") {
-                selectedPatch = this.props.allPatches.find((patch) => patch.id === parseInt(event.target[event.target.selectedIndex].value))
+                selectedPatch = this.props.allPatches.find((patch) => patch.id === parseInt(event.target[event.target.selectedIndex].value, 10))
                 console.log(selectedPatch);
               } else {
                 selectedPatch = this.defaultPatch
