@@ -10,15 +10,16 @@ class PatchesController < ApplicationController
   end
 
   def create
-    puts '*****params in patch#create:'
     puts params
-    @patch = Patch.create(name: params[:name], selected_waveform: params[:selectedWaveform], master_gain: params[:masterGain], current_octave: params[:currentOctave], oscillator_gain_node_value: params[:oscillatorGainNodeValue])
+    # remember to add params for new signal processing
+    @patch = Patch.create(name: params[:name], selected_waveform: params[:selectedWaveform], master_gain: params[:masterGain], current_octave: params[:currentOctave], oscillator_gain_node_value: params[:oscillatorGainNodeValue], filter_frequency: params[:filterFrequency], filter_q: params[:filterQ], filter_type: params[:filterType])
     render json: @patch
   end
 
   def update
     @patch = Patch.find(params[:id])
-    @patch.update(name: params[:name], selected_waveform: params[:selectedWaveform], master_gain: params[:masterGain], current_octave: params[:currentOctave], oscillator_gain_node_value: params[:oscillatorGainNodeValue])
+    # remember to add params for new signal processing
+    @patch.update(name: params[:name], selected_waveform: params[:selectedWaveform], master_gain: params[:masterGain], current_octave: params[:currentOctave], oscillator_gain_node_value: params[:oscillatorGainNodeValue], filter_frequency: params[:filterFrequency], filter_q: params[:filterQ], filter_type: params[:filterType])
     render json: @patch
   end
 

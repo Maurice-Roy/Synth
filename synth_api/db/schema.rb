@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180323160857) do
+ActiveRecord::Schema.define(version: 20180324182109) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -31,6 +31,9 @@ ActiveRecord::Schema.define(version: 20180323160857) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.float "oscillator_gain_node_value"
+    t.float "filter_frequency"
+    t.float "filter_q"
+    t.string "filter_type"
   end
 
   create_table "synthrooms", force: :cascade do |t|

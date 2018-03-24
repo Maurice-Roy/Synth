@@ -11,11 +11,11 @@ const FETCH_ALL_SYNTHROOMS = 'FETCH_ALL_SYNTHROOMS'
 const LOAD_SYNTHROOM = 'LOAD_SYNTHROOM'
 
 const SET_USERNAME = 'SET_USERNAME'
+const ADD_USER = 'ADD_USER'
+const REMOVE_USER = 'REMOVE_USER'
 
 const ADD_NEW_MESSAGE = 'ADD_NEW_MESSAGE'
 
-const ADD_USER = 'ADD_USER'
-const REMOVE_USER = 'REMOVE_USER'
 
 export const fetchAllPatches = () => {
   return function(dispatch){

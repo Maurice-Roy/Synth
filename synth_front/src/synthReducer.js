@@ -13,10 +13,14 @@ const defaultState = {
         selectedWaveform: 'square',
         masterGain: 0.5,
         currentOctave: 4,
-        oscillatorGainNodeValue: 0.5
+        oscillatorGainNodeValue: 0.5,
+        filterFrequency: 10000.0,
+        filterQ: 1.0,
+        filterType: 'lowpass'
       },
       signalProcessing: {
         oscillatorGainNode: null,
+        filterNode: null
       }
     }
   },
@@ -43,7 +47,10 @@ export default function synthReducer (state = defaultState, action) {
               selectedWaveform: action.payload.patch.selected_waveform,
               masterGain: action.payload.patch.master_gain,
               currentOctave: action.payload.patch.current_octave,
-              oscillatorGainNodeValue: action.payload.patch.oscillator_gain_node_value
+              oscillatorGainNodeValue: action.payload.patch.oscillator_gain_node_value,
+              filterFrequency: action.payload.patch.filter_frequency,
+              filterQ: action.payload.patch.filter_q,
+              filterType: action.payload.patch.filter_type
             }
           }
         }
@@ -76,7 +83,10 @@ export default function synthReducer (state = defaultState, action) {
               selectedWaveform: action.payload.patch.selected_waveform,
               masterGain: action.payload.patch.master_gain,
               currentOctave: action.payload.patch.current_octave,
-              oscillatorGainNodeValue: action.payload.patch.oscillator_gain_node_value
+              oscillatorGainNodeValue: action.payload.patch.oscillator_gain_node_value,
+              filterFrequency: action.payload.patch.filter_frequency,
+              filterQ: action.payload.patch.filter_q,
+              filterType: action.payload.patch.filter_type
             }
           }
         }
@@ -121,10 +131,14 @@ export default function synthReducer (state = defaultState, action) {
               selectedWaveform: 'square',
               masterGain: 0.5,
               currentOctave: 4,
-              oscillatorGainNodeValue: 0.5
+              oscillatorGainNodeValue: 0.5,
+              filterFrequency: 10000.0,
+              filterQ: 1.0,
+              filterType: 'lowpass'
             },
             signalProcessing: {
               oscillatorGainNode: null,
+              filterNode: null
             }
           }
         }

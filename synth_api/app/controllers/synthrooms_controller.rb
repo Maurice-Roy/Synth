@@ -127,7 +127,10 @@ class SynthroomsController < ApplicationController
       selectedWaveform: params[:patch][:selected_waveform],
       masterGain: params[:patch][:master_gain],
       currentOctave: params[:patch][:current_octave],
-      oscillatorGainNodeValue: params[:patch][:oscillator_gain_node_value]
+      oscillatorGainNodeValue: params[:patch][:oscillator_gain_node_value],
+      filterFrequency: params[:patch][:filter_frequency],
+      filterQ: params[:patch][:filter_q],
+      filterType: params[:patch][:filter_type]
       # add more signal processng values here
     }
   end
