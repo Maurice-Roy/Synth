@@ -26,7 +26,17 @@ class PatchesController < ApplicationController
       gain_envelope_sustain_level: params[:gainEnvelopeSustainLevel],
       gain_envelope_release_time: params[:gainEnvelopeReleaseTime],
       gain_envelope_gate_time: params[:gainEnvelopeGateTime],
-      gain_envelope_release_curve: params[:gainEnvelopeReleaseCurve]
+      gain_envelope_release_curve: params[:gainEnvelopeReleaseCurve],
+      adsr_filter_frequency: params[:adsrFilterFrequency],
+      adsr_filter_q: params[:adsrFilterQ],
+      adsr_filter_type: params[:adsrFilterType],
+      filter_envelope_attack_time: params[:filterEnvelopeAttackTime],
+      filter_envelope_decay_time: params[:filterEnvelopeDecayTime],
+      filter_envelope_sustain_level: params[:filterEnvelopeSustainLevel],
+      filter_envelope_peak_level: params[:filterEnvelopePeakLevel],
+      filter_envelope_release_time: params[:filterEnvelopeReleaseTime],
+      filter_envelope_gate_time: params[:filterEnvelopeGateTime],
+      filter_envelope_release_curve: params[:filterEnvelopeReleaseCurve]
     )
     render json: @patch
   end
@@ -47,7 +57,17 @@ class PatchesController < ApplicationController
       gain_envelope_sustain_level: params[:gainEnvelopeSustainLevel],
       gain_envelope_release_time: params[:gainEnvelopeReleaseTime],
       gain_envelope_gate_time: params[:gainEnvelopeGateTime],
-      gain_envelope_release_curve: params[:gainEnvelopeReleaseCurve]
+      gain_envelope_release_curve: params[:gainEnvelopeReleaseCurve],
+      adsr_filter_frequency: params[:adsrFilterFrequency],
+      adsr_filter_q: params[:adsrFilterQ],
+      adsr_filter_type: params[:adsrFilterType],
+      filter_envelope_attack_time: params[:filterEnvelopeAttackTime],
+      filter_envelope_decay_time: params[:filterEnvelopeDecayTime],
+      filter_envelope_sustain_level: params[:filterEnvelopeSustainLevel],
+      filter_envelope_peak_level: params[:filterEnvelopePeakLevel],
+      filter_envelope_release_time: params[:filterEnvelopeReleaseTime],
+      filter_envelope_gate_time: params[:filterEnvelopeGateTime],
+      filter_envelope_release_curve: params[:filterEnvelopeReleaseCurve]
     )
     render json: @patch
   end

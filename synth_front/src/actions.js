@@ -68,10 +68,10 @@ export const deletePatch = (patchID) => {
   }
 }
 
-export const addActiveOscillator = (key, oscillator, username) => {
+export const addActiveOscillator = (key, oscillatorNode, username, adsrGainNode, adsrFilterNode) => {
   return {
     type: ADD_ACTIVE_OSCILLATOR,
-    payload: {key, oscillator, username}
+    payload: {key, oscillatorNode, username, adsrGainNode, adsrFilterNode}
   }
 }
 

@@ -21,13 +21,24 @@ const defaultState = {
         gainEnvelopeDecayTime: 0.25,
         gainEnvelopeSustainLevel: 0.8,
         gainEnvelopeReleaseTime: 0.5,
-        gainEnvelopeGateTime: 6,
-        gainEnvelopeReleaseCurve: "exp"
+        gainEnvelopeGateTime: Infinity,
+        gainEnvelopeReleaseCurve: "exp",
+        adsrFilterFrequency: 10000.0,
+        adsrFilterQ: 1.0,
+        adsrFilterType: 'lowpass',
+        filterEnvelopeAttackTime: 0.2,
+        filterEnvelopeDecayTime: 0.25,
+        filterEnvelopeSustainLevel: 0.8,
+        filterEnvelopePeakLevel: 10000.0,
+        filterEnvelopeReleaseTime: 0.5,
+        filterEnvelopeGateTime: Infinity,
+        filterEnvelopeReleaseCurve: "exp"
       },
       signalProcessing: {
         oscillatorGainNode: null,
         filterNode: null,
-        gainEnvelope: null
+        gainEnvelope: null,
+        filterEnvelope: null
       }
     }
   },
@@ -63,7 +74,17 @@ export default function synthReducer (state = defaultState, action) {
               gainEnvelopeSustainLevel: action.payload.patch.gain_envelope_sustain_level,
               gainEnvelopeReleaseTime: action.payload.patch.gain_envelope_release_time,
               gainEnvelopeGateTime: action.payload.patch.gain_envelope_gate_time,
-              gainEnvelopeReleaseCurve: action.payload.patch.gain_envelope_release_curve
+              gainEnvelopeReleaseCurve: action.payload.patch.gain_envelope_release_curve,
+              adsrFilterFrequency: action.payload.patch.adsr_filter_frequency,
+              adsrFilterQ: action.payload.patch.adsr_filter_q,
+              adsrFilterType: action.payload.patch.adsr_filter_type,
+              filterEnvelopeAttackTime: action.payload.patch.filter_envelope_attack_time,
+              filterEnvelopeDecayTime: action.payload.patch.filter_envelope_decay_time,
+              filterEnvelopeSustainLevel: action.payload.patch.filter_envelope_sustain_level,
+              filterEnvelopePeakLevel: action.payload.patch.filter_envelope_peak_level,
+              filterEnvelopeReleaseTime: action.payload.patch.filter_envelope_release_time,
+              filterEnvelopeGateTime: action.payload.patch.filter_envelope_gate_time,
+              filterEnvelopeReleaseCurve: action.payload.patch.filter_envelope_release_curve
             }
           }
         }
@@ -105,7 +126,17 @@ export default function synthReducer (state = defaultState, action) {
               gainEnvelopeSustainLevel: action.payload.patch.gain_envelope_sustain_level,
               gainEnvelopeReleaseTime: action.payload.patch.gain_envelope_release_time,
               gainEnvelopeGateTime: action.payload.patch.gain_envelope_gate_time,
-              gainEnvelopeReleaseCurve: action.payload.patch.gain_envelope_release_curve
+              gainEnvelopeReleaseCurve: action.payload.patch.gain_envelope_release_curve,
+              adsrFilterFrequency: action.payload.patch.adsr_filter_frequency,
+              adsrFilterQ: action.payload.patch.adsr_filter_q,
+              adsrFilterType: action.payload.patch.adsr_filter_type,
+              filterEnvelopeAttackTime: action.payload.patch.filter_envelope_attack_time,
+              filterEnvelopeDecayTime: action.payload.patch.filter_envelope_decay_time,
+              filterEnvelopeSustainLevel: action.payload.patch.filter_envelope_sustain_level,
+              filterEnvelopePeakLevel: action.payload.patch.filter_envelope_peak_level,
+              filterEnvelopeReleaseTime: action.payload.patch.filter_envelope_release_time,
+              filterEnvelopeGateTime: action.payload.patch.filter_envelope_gate_time,
+              filterEnvelopeReleaseCurve: action.payload.patch.filter_envelope_release_curve
             }
           }
         }
@@ -119,7 +150,11 @@ export default function synthReducer (state = defaultState, action) {
           ...state.activeOscillators,
           [action.payload.username]: {
             ...state.activeOscillators[action.payload.username],
-            [action.payload.key]: action.payload.oscillator
+            [action.payload.key]: {
+              oscillatorNode: action.payload.oscillatorNode,
+              adsrGainNode: action.payload.adsrGainNode,
+              adsrFilterNode: action.payload.adsrFilterNode
+            }
           }
         }
       }
@@ -158,13 +193,24 @@ export default function synthReducer (state = defaultState, action) {
               gainEnvelopeDecayTime: 0.25,
               gainEnvelopeSustainLevel: 0.8,
               gainEnvelopeReleaseTime: 0.5,
-              gainEnvelopeGateTime: 6,
-              gainEnvelopeReleaseCurve: "exp"
+              gainEnvelopeGateTime: Infinity,
+              gainEnvelopeReleaseCurve: "exp",
+              adsrFilterFrequency: 10000.0,
+              adsrFilterQ: 1.0,
+              adsrFilterType: 'lowpass',
+              filterEnvelopeAttackTime: 0.2,
+              filterEnvelopeDecayTime: 0.25,
+              filterEnvelopeSustainLevel: 0.8,
+              filterEnvelopePeakLevel: 10000.0,
+              filterEnvelopeReleaseTime: 0.5,
+              filterEnvelopeGateTime: Infinity,
+              filterEnvelopeReleaseCurve: "exp"
             },
             signalProcessing: {
               oscillatorGainNode: null,
               filterNode: null,
-              gainEnvelope: null
+              gainEnvelope: null,
+              filterEnvelope: null
             }
           }
         }

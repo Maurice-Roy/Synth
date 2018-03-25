@@ -161,8 +161,18 @@ class Synthroom extends Component {
       gain_envelope_decay_time: 0.25,
       gain_envelope_sustain_level: 0.8,
       gain_envelope_release_time: 0.5,
-      gain_envelope_gate_time: 6,
-      gain_envelope_release_curve: "exp"
+      gain_envelope_gate_time: Infinity,
+      gain_envelope_release_curve: "exp",
+      adsr_filter_frequency: 10000.0,
+      adsr_filter_q: 1.0,
+      adsr_filter_type: 'lowpass',
+      filter_envelope_attack_time: 0.2,
+      filter_envelope_decay_time: 0.25,
+      filter_envelope_sustain_level: 0.8,
+      filter_envelope_peak_level: 10000.0,
+      filter_envelope_release_time: 0.5,
+      filter_envelope_gate_time: Infinity,
+      filter_envelope_release_curve: "exp"
     }
 
     //initial fetch for patches from the backend
@@ -213,7 +223,6 @@ class Synthroom extends Component {
     this.masterGainNode.connect(this.audioContext.destination);
     this.masterGainNode.gain.value = this.volumeControl.value;
   }
-
 
   componentWillReceiveProps = (nextProps) => {
     console.log(nextProps);
@@ -350,6 +359,16 @@ class Synthroom extends Component {
         gainEnvelope.gateTime = data.payload.currentPatchSettings.gainEnvelopeGateTime
         gainEnvelope.releaseCurve = data.payload.currentPatchSettings.gainEnvelopeReleaseCurve
 
+        //create filterEnvelope
+        let filterEnvelope = new ADSREnvelope()
+        filterEnvelope.attackTime = data.payload.currentPatchSettings.filterEnvelopeAttackTime
+        filterEnvelope.decayTime = data.payload.currentPatchSettings.filterEnvelopeDecayTime
+        filterEnvelope.sustainLevel = data.payload.currentPatchSettings.filterEnvelopeSustainLevel
+        filterEnvelope.peakLevel = data.payload.currentPatchSettings.filterEnvelopePeakLevel
+        filterEnvelope.releaseTime = data.payload.currentPatchSettings.filterEnvelopeReleaseTime
+        filterEnvelope.gateTime = data.payload.currentPatchSettings.filterEnvelopeGateTime
+        filterEnvelope.releaseCurve = data.payload.currentPatchSettings.filterEnvelopeReleaseCurve
+
         //connect signal processing Nodes
         oscillatorGainNode.connect(filterNode);
         filterNode.connect(this.masterGainNode);
@@ -359,7 +378,8 @@ class Synthroom extends Component {
           signalProcessing: {
             oscillatorGainNode: oscillatorGainNode,
             filterNode: filterNode,
-            gainEnvelope: gainEnvelope
+            gainEnvelope: gainEnvelope,
+            filterEnvelope: filterEnvelope
           }
         }
         this.props.addUser(data.payload.username, newUser) // add signal processing to addNewUser here
@@ -402,6 +422,30 @@ class Synthroom extends Component {
           case 'gainEnvelopeReleaseTime':
             this.props.allCurrentUsers[data.payload.username].signalProcessing.gainEnvelope.releaseTime = data.payload.value
             break;
+          case 'adsrFilterFrequency':
+            // this.props.allCurrentUsers[data.payload.username].signalProcessing.filterNode.frequency.value = data.payload.value
+            break;
+          case 'adsrFilterQ':
+            // this.props.allCurrentUsers[data.payload.username].signalProcessing.filterNode.Q.value = data.payload.value
+            break;
+          case 'adsrFilterType':
+            // this.props.allCurrentUsers[data.payload.username].signalProcessing.filterNode.type = data.payload.value
+            break;
+          case 'filterEnvelopeAttackTime':
+            this.props.allCurrentUsers[data.payload.username].signalProcessing.filterEnvelope.attackTime = data.payload.value
+            break;
+          case 'filterEnvelopeDecayTime':
+            this.props.allCurrentUsers[data.payload.username].signalProcessing.filterEnvelope.decayTime = data.payload.value
+            break;
+          case 'filterEnvelopeSustainLevel':
+            this.props.allCurrentUsers[data.payload.username].signalProcessing.filterEnvelope.sustainLevel = data.payload.value
+            break;
+          case 'filterEnvelopePeakLevel':
+            this.props.allCurrentUsers[data.payload.username].signalProcessing.filterEnvelope.peakLevel = data.payload.value
+            break;
+          case 'filterEnvelopeReleaseTime':
+            this.props.allCurrentUsers[data.payload.username].signalProcessing.filterEnvelope.releaseTime = data.payload.value
+            break;
           default:
             console.log('Hit default in UPDATE_PATCH switch')
             break;
@@ -421,26 +465,57 @@ class Synthroom extends Component {
         this.props.allCurrentUsers[data.payload.username].signalProcessing.gainEnvelope.decayTime = data.payload.gainEnvelopeDecayTime
         this.props.allCurrentUsers[data.payload.username].signalProcessing.gainEnvelope.sustainLevel = data.payload.gainEnvelopeSustainLevel
         this.props.allCurrentUsers[data.payload.username].signalProcessing.gainEnvelope.releaseTime = data.payload.gainEnvelopeReleaseTime
+        //filter Envelope:
+        this.props.allCurrentUsers[data.payload.username].signalProcessing.filterEnvelope.attackTime = data.payload.filterEnvelopeAttackTime
+        this.props.allCurrentUsers[data.payload.username].signalProcessing.filterEnvelope.decayTime = data.payload.filterEnvelopeDecayTime
+        this.props.allCurrentUsers[data.payload.username].signalProcessing.filterEnvelope.sustainLevel = data.payload.filterEnvelopeSustainLevel
+        this.props.allCurrentUsers[data.payload.username].signalProcessing.filterEnvelope.peakLevel = data.payload.filterEnvelopePeakLevel
+        this.props.allCurrentUsers[data.payload.username].signalProcessing.filterEnvelope.releaseTime = data.payload.filterEnvelopeReleaseTime
 
         this.props.loadPatch(data.payload.username, data.payload.patch)
         break;
       case 'ADD_SOCKET_OSCILLATOR':
+        //get oscillator start time
+        let startTime = this.audioContext.currentTime
+
         //create oscillator and save to state
         let osc = this.audioContext.createOscillator();
         osc.type = data.payload.waveform
         osc.frequency.value = data.payload.frequency;
 
-        let startTime = this.audioContext.currentTime
-        this.props.allCurrentUsers[data.payload.username].currentPatchSettings.gainEnvelopeGateTime = Infinity
-        this.props.allCurrentUsers[data.payload.username].signalProcessing.gainEnvelope.applyTo(this.props.allCurrentUsers[data.payload.username].signalProcessing.oscillatorGainNode.gain, startTime)
+        //create gain node for ADSR
+        let adsrGainNode = this.audioContext.createGain();
 
-        osc.connect(this.props.allCurrentUsers[data.payload.username].signalProcessing.oscillatorGainNode);
+        //create filter for envelopeFilter
+        let adsrFilterNode = this.audioContext.createBiquadFilter();
+        adsrFilterNode.frequency.value = this.props.allCurrentUsers[data.payload.username].currentPatchSettings.adsrFilterFrequency
+        adsrFilterNode.Q.value = this.props.allCurrentUsers[data.payload.username].currentPatchSettings.adsrFilterQ
+        adsrFilterNode.type = this.props.allCurrentUsers[data.payload.username].currentPatchSettings.adsrFilterType
+
+        //apply envelope to gain
+        this.props.allCurrentUsers[data.payload.username].signalProcessing.gainEnvelope.gateTime = Infinity
+        this.props.allCurrentUsers[data.payload.username].signalProcessing.gainEnvelope.applyTo(adsrGainNode.gain, startTime)
+
+        //apply envelope to filter frequency
+        this.props.allCurrentUsers[data.payload.username].signalProcessing.filterEnvelope.gateTime = Infinity
+        this.props.allCurrentUsers[data.payload.username].signalProcessing.filterEnvelope.peakLevel = this.props.allCurrentUsers[data.payload.username].currentPatchSettings.filterEnvelopePeakLevel
+        this.props.allCurrentUsers[data.payload.username].signalProcessing.filterEnvelope.sustainLevel = this.props.allCurrentUsers[data.payload.username].currentPatchSettings.filterEnvelopeSustainLevel
+        this.props.allCurrentUsers[data.payload.username].signalProcessing.filterEnvelope.applyTo(adsrFilterNode.frequency, startTime)
+
+        //connect nodes
+        osc.connect(adsrGainNode);
+        adsrGainNode.connect(adsrFilterNode);
+        adsrFilterNode.connect(this.props.allCurrentUsers[data.payload.username].signalProcessing.oscillatorGainNode);
+
+        //start oscillator
         osc.start(startTime);
-        this.props.addActiveOscillator(data.payload.key, osc, data.payload.username)
+
+        //save oscillator, gain, & filter to state
+        this.props.addActiveOscillator(data.payload.key, osc, data.payload.username, adsrGainNode, adsrFilterNode)
         break;
       case 'REMOVE_SOCKET_OSCILLATOR':
         if (this.props.activeOscillators[data.payload.username] && this.props.activeOscillators[data.payload.username][data.payload.key])
-          this.props.activeOscillators[data.payload.username][data.payload.key].stop()
+          this.props.activeOscillators[data.payload.username][data.payload.key].oscillatorNode.stop()
           this.props.removeActiveOscillator(data.payload.key, data.payload.username)
         break;
       case 'ADD_MESSAGE':
@@ -591,17 +666,18 @@ class Synthroom extends Component {
           <input id="oscillatorGainNodeValue" type="range" min="0.0" max="1.0" step="0.01"
               value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.oscillatorGainNodeValue} list="volumes" name="volume" ref="oscillatorGainNodeValue"
             onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
-          <span>Filter Type: </span>
+          <span>Secondary Filter: </span><br/>
+          <span>Type: </span>
           <select name="filterType" id="filterType" value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterType} ref="filterType" id="filterType" onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}>
             <option value="lowpass">Lowpass</option>
             <option value="highpass" selected>Highpass</option>
             <option value="bandpass">Bandpass</option>
           </select><br/>
-          <span>Filter Frequency: </span>
+          <span>Frequency: </span>
           <input id="filterFrequency" type="range" min="10.0" max="20000.0" step="0.01"
               value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterFrequency} list="frequencies" name="frequency" ref="filterFrequency"
             onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
-          <span>Filter Q: </span>
+          <span>Q: </span>
           <input id="filterQ" type="range" min="0.01" max="50.0" step="0.01"
               value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterQ} list="Qs" name="Q" ref="filterQ"
             onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
@@ -616,12 +692,50 @@ class Synthroom extends Component {
                 value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.gainEnvelopeDecayTime} list="decayTimes" name="decayTime" ref="gainEnvelopeDecayTime"
               onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
             <span>Sustain: </span>
-            <input id="gainEnvelopeSustainLevel" type="range" min="0.01" max="10.0" step="0.01"
+            <input id="gainEnvelopeSustainLevel" type="range" min="0.01" max="1.0" step="0.01"
                 value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.gainEnvelopeSustainLevel} list="sustainLevels" name="sustainLevel" ref="gainEnvelopeSustainLevel"
               onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
             <span>Release: </span>
             <input id="gainEnvelopeReleaseTime" type="range" min="0.01" max="10.0" step="0.01"
                 value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.gainEnvelopeReleaseTime} list="releaseTimes" name="releaseTime" ref="gainEnvelopeReleaseTime"
+              onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
+          </div>
+          <div className='filter-envelope'>
+            <span>Primary Filter: </span><br/>
+            <span>Type: </span>
+            <select name="adsrFilterType" id="adsrFilterType" value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.adsrFilterType} ref="adsrFilterType" id="adsrFilterType" onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}>
+              <option value="lowpass">Lowpass</option>
+              <option value="highpass" selected>Highpass</option>
+              <option value="bandpass">Bandpass</option>
+            </select><br/>
+            <span>Frequency: </span>
+            <input id="adsrFilterFrequency" type="range" min="10.0" max="20000.0" step="0.01"
+                value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.adsrFilterFrequency} list="frequencies" name="frequency" ref="adsrFilterFrequency"
+              onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
+            <span>Q: </span>
+            <input id="adsrFilterQ" type="range" min="0.01" max="50.0" step="0.01"
+                value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.adsrFilterQ} list="Qs" name="Q" ref="adsrFilterQ"
+              onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
+            <span>Filter Envelope: </span><br/>
+            <span>Attack: </span>
+            <input id="filterEnvelopeAttackTime" type="range" min="0.01" max="10.0" step="0.01"
+                value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterEnvelopeAttackTime} list="attackTimes" name="attackTime" ref="filterEnvelopeAttackTime"
+              onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
+            <span>Decay: </span>
+            <input id="filterEnvelopeDecayTime" type="range" min="0.01" max="10.0" step="0.01"
+                value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterEnvelopeDecayTime} list="decayTimes" name="decayTime" ref="filterEnvelopeDecayTime"
+              onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
+            <span>Sustain: </span>
+            <input id="filterEnvelopeSustainLevel" type="range" min="0.01" max="1.0" step="0.01"
+                value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterEnvelopeSustainLevel} list="sustainLevels" name="sustainLevel" ref="filterEnvelopeSustainLevel"
+              onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
+            <span>Peak: </span>
+            <input id="filterEnvelopePeakLevel" type="range" min="0.01" max="20000.0" step="0.01"
+                value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterEnvelopePeakLevel} list="peakLevels" name="peakLevel" ref="filterEnvelopePeakLevel"
+              onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
+            <span>Release: </span>
+            <input id="filterEnvelopeReleaseTime" type="range" min="0.01" max="10.0" step="0.01"
+                value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterEnvelopeReleaseTime} list="releaseTimes" name="releaseTime" ref="filterEnvelopeReleaseTime"
               onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
           </div>
         </div>

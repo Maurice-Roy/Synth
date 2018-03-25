@@ -136,7 +136,17 @@ class SynthroomsController < ApplicationController
       gainEnvelopeSustainLevel: params[:patch][:gain_envelope_sustain_level],
       gainEnvelopeReleaseTime: params[:patch][:gain_envelope_release_time],
       gainEnvelopeGateTime: params[:patch][:gain_envelope_gate_time],
-      gainEnvelopeReleaseCurve: params[:patch][:gain_envelope_release_curve]
+      gainEnvelopeReleaseCurve: params[:patch][:gain_envelope_release_curve],
+      adsrFilterFrequency: params[:patch][:adsr_filter_frequency],
+      adsrFilterQ: params[:patch][:adsr_filter_q],
+      adsrFilterType: params[:patch][:adsr_filter_type],
+      filterEnvelopeAttackTime: params[:patch][:filter_envelope_attack_time],
+      filterEnvelopeDecayTime: params[:patch][:filter_envelope_decay_time],
+      filterEnvelopeSustainLevel: params[:patch][:filter_envelope_sustain_level],
+      filterEnvelopePeakLevel: params[:patch][:filter_envelope_peak_level],
+      filterEnvelopeReleaseTime: params[:patch][:filter_envelope_release_time],
+      filterEnvelopeGateTime: params[:patch][:filter_envelope_gate_time],
+      filterEnvelopeReleaseCurve: params[:patch][:filter_envelope_release_curve]
       # add more signal processng values here
     }
   end
