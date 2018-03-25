@@ -130,7 +130,13 @@ class SynthroomsController < ApplicationController
       oscillatorGainNodeValue: params[:patch][:oscillator_gain_node_value],
       filterFrequency: params[:patch][:filter_frequency],
       filterQ: params[:patch][:filter_q],
-      filterType: params[:patch][:filter_type]
+      filterType: params[:patch][:filter_type],
+      gainEnvelopeAttackTime: params[:patch][:gain_envelope_attack_time],
+      gainEnvelopeDecayTime: params[:patch][:gain_envelope_decay_time],
+      gainEnvelopeSustainLevel: params[:patch][:gain_envelope_sustain_level],
+      gainEnvelopeReleaseTime: params[:patch][:gain_envelope_release_time],
+      gainEnvelopeGateTime: params[:patch][:gain_envelope_gate_time],
+      gainEnvelopeReleaseCurve: params[:patch][:gain_envelope_release_curve]
       # add more signal processng values here
     }
   end

@@ -12,14 +12,43 @@ class PatchesController < ApplicationController
   def create
     puts params
     # remember to add params for new signal processing
-    @patch = Patch.create(name: params[:name], selected_waveform: params[:selectedWaveform], master_gain: params[:masterGain], current_octave: params[:currentOctave], oscillator_gain_node_value: params[:oscillatorGainNodeValue], filter_frequency: params[:filterFrequency], filter_q: params[:filterQ], filter_type: params[:filterType])
+    @patch = Patch.create(
+      name: params[:name],
+      selected_waveform: params[:selectedWaveform],
+      master_gain: params[:masterGain],
+      current_octave: params[:currentOctave],
+      oscillator_gain_node_value: params[:oscillatorGainNodeValue],
+      filter_frequency: params[:filterFrequency],
+      filter_q: params[:filterQ],
+      filter_type: params[:filterType],
+      gain_envelope_attack_time: params[:gainEnvelopeAttackTime],
+      gain_envelope_decay_time: params[:gainEnvelopeDecayTime],
+      gain_envelope_sustain_level: params[:gainEnvelopeSustainLevel],
+      gain_envelope_release_time: params[:gainEnvelopeReleaseTime],
+      gain_envelope_gate_time: params[:gainEnvelopeGateTime],
+      gain_envelope_release_curve: params[:gainEnvelopeReleaseCurve]
+    )
     render json: @patch
   end
 
   def update
     @patch = Patch.find(params[:id])
     # remember to add params for new signal processing
-    @patch.update(name: params[:name], selected_waveform: params[:selectedWaveform], master_gain: params[:masterGain], current_octave: params[:currentOctave], oscillator_gain_node_value: params[:oscillatorGainNodeValue], filter_frequency: params[:filterFrequency], filter_q: params[:filterQ], filter_type: params[:filterType])
+    @patch.update(name: params[:name],
+      selected_waveform: params[:selectedWaveform],
+      master_gain: params[:masterGain],
+      current_octave: params[:currentOctave],
+      oscillator_gain_node_value: params[:oscillatorGainNodeValue],
+      filter_frequency: params[:filterFrequency],
+      filter_q: params[:filterQ],
+      filter_type: params[:filterType],
+      gain_envelope_attack_time: params[:gainEnvelopeAttackTime],
+      gain_envelope_decay_time: params[:gainEnvelopeDecayTime],
+      gain_envelope_sustain_level: params[:gainEnvelopeSustainLevel],
+      gain_envelope_release_time: params[:gainEnvelopeReleaseTime],
+      gain_envelope_gate_time: params[:gainEnvelopeGateTime],
+      gain_envelope_release_curve: params[:gainEnvelopeReleaseCurve]
+    )
     render json: @patch
   end
 

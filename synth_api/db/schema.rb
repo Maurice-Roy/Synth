@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180324182109) do
+ActiveRecord::Schema.define(version: 20180325153740) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -34,6 +34,12 @@ ActiveRecord::Schema.define(version: 20180324182109) do
     t.float "filter_frequency"
     t.float "filter_q"
     t.string "filter_type"
+    t.float "gain_envelope_attack_time"
+    t.float "gain_envelope_decay_time"
+    t.float "gain_envelope_sustain_level"
+    t.float "gain_envelope_release_time"
+    t.float "gain_envelope_gate_time"
+    t.string "gain_envelope_release_curve"
   end
 
   create_table "synthrooms", force: :cascade do |t|
