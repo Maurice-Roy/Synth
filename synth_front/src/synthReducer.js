@@ -153,7 +153,8 @@ export default function synthReducer (state = defaultState, action) {
             [action.payload.key]: {
               oscillatorNode: action.payload.oscillatorNode,
               adsrGainNode: action.payload.adsrGainNode,
-              adsrFilterNode: action.payload.adsrFilterNode
+              adsrFilterNode: action.payload.adsrFilterNode,
+              startTime: action.payload.startTime
             }
           }
         }

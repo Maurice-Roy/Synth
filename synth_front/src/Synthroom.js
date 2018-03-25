@@ -510,12 +510,16 @@ class Synthroom extends Component {
         //start oscillator
         osc.start(startTime);
 
-        //save oscillator, gain, & filter to state
-        this.props.addActiveOscillator(data.payload.key, osc, data.payload.username, adsrGainNode, adsrFilterNode)
+        //save oscillator, gain, & filter to state - and oscillator start time
+        this.props.addActiveOscillator(data.payload.key, osc, data.payload.username, adsrGainNode, adsrFilterNode, startTime)
         break;
       case 'REMOVE_SOCKET_OSCILLATOR':
+        let playbackTime = this.audioContext.currentTime
         if (this.props.activeOscillators[data.payload.username] && this.props.activeOscillators[data.payload.username][data.payload.key])
-          this.props.activeOscillators[data.payload.username][data.payload.key].oscillatorNode.stop()
+          this.props.activeOscillators[data.payload.username][data.payload.key].adsrFilterNode.frequency.cancelScheduledValues(this.props.activeOscillators[data.payload.username][data.payload.key].startTime)
+          this.props.allCurrentUsers[data.payload.username].signalProcessing.filterEnvelope.gateTime = playbackTime - this.props.activeOscillators[data.payload.username][data.payload.key].startTime
+          this.props.allCurrentUsers[data.payload.username].signalProcessing.filterEnvelope.applyTo(this.props.activeOscillators[data.payload.username][data.payload.key].adsrFilterNode.frequency, this.props.activeOscillators[data.payload.username][data.payload.key].startTime)
+          this.props.activeOscillators[data.payload.username][data.payload.key].oscillatorNode.stop(this.props.activeOscillators[data.payload.username][data.payload.key].startTime + this.props.allCurrentUsers[data.payload.username].signalProcessing.filterEnvelope.duration)
           this.props.removeActiveOscillator(data.payload.key, data.payload.username)
         break;
       case 'ADD_MESSAGE':
