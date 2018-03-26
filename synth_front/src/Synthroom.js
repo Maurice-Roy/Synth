@@ -229,7 +229,7 @@ class Synthroom extends Component {
 
     //send signal to all users in room to prompt gathering user data
     if(nextProps.allCurrentUsers[nextProps.username] && !nextProps.allCurrentUsers[nextProps.username].signalProcessing.oscillatorGainNode){
-      fetch(`http://192.168.1.159:3000/synthrooms/${this.props.currentSynthroom.id}/retrieve_user_data`, {
+      fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/retrieve_user_data`, {
         method: "POST"
       })
     }
@@ -301,7 +301,7 @@ class Synthroom extends Component {
 
   savePatch = () => {
     if (this.props.allCurrentUsers[this.props.username].currentPatchSettings.id !== null) {
-      fetch(`http://192.168.1.159:3000/patches/${this.props.allCurrentUsers[this.props.username].currentPatchSettings.id}`, {
+      fetch(`http://192.168.4.168:3000/patches/${this.props.allCurrentUsers[this.props.username].currentPatchSettings.id}`, {
 				method: "PATCH",
 				headers: {
 					'Content-Type': 'application/json'
@@ -326,7 +326,7 @@ class Synthroom extends Component {
       case 'RETRIEVE_USER_DATA':
         //collect all other current user's name and patch state, & create their signal processing
         console.log('ABOUT TO RETRIEVE_USER_DATA');
-        fetch(`http://192.168.1.159:3000/synthrooms/${this.props.currentSynthroom.id}/add_user`, {
+        fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/add_user`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
@@ -517,9 +517,12 @@ class Synthroom extends Component {
         let playbackTime = this.audioContext.currentTime
         if (this.props.activeOscillators[data.payload.username] && this.props.activeOscillators[data.payload.username][data.payload.key])
           this.props.activeOscillators[data.payload.username][data.payload.key].adsrFilterNode.frequency.cancelScheduledValues(this.props.activeOscillators[data.payload.username][data.payload.key].startTime)
+          this.props.activeOscillators[data.payload.username][data.payload.key].adsrGainNode.gain.cancelScheduledValues(this.props.activeOscillators[data.payload.username][data.payload.key].startTime)
           this.props.allCurrentUsers[data.payload.username].signalProcessing.filterEnvelope.gateTime = playbackTime - this.props.activeOscillators[data.payload.username][data.payload.key].startTime
+          this.props.allCurrentUsers[data.payload.username].signalProcessing.gainEnvelope.gateTime = playbackTime - this.props.activeOscillators[data.payload.username][data.payload.key].startTime
           this.props.allCurrentUsers[data.payload.username].signalProcessing.filterEnvelope.applyTo(this.props.activeOscillators[data.payload.username][data.payload.key].adsrFilterNode.frequency, this.props.activeOscillators[data.payload.username][data.payload.key].startTime)
-          this.props.activeOscillators[data.payload.username][data.payload.key].oscillatorNode.stop(this.props.activeOscillators[data.payload.username][data.payload.key].startTime + this.props.allCurrentUsers[data.payload.username].signalProcessing.filterEnvelope.duration)
+          this.props.allCurrentUsers[data.payload.username].signalProcessing.gainEnvelope.applyTo(this.props.activeOscillators[data.payload.username][data.payload.key].adsrGainNode.gain, this.props.activeOscillators[data.payload.username][data.payload.key].startTime)
+          this.props.activeOscillators[data.payload.username][data.payload.key].oscillatorNode.stop(this.props.activeOscillators[data.payload.username][data.payload.key].startTime + this.props.allCurrentUsers[data.payload.username].signalProcessing.gainEnvelope.duration)
           this.props.removeActiveOscillator(data.payload.key, data.payload.username)
         break;
       case 'ADD_MESSAGE':
@@ -533,7 +536,7 @@ class Synthroom extends Component {
 
   handleSendMessage = (messageInput) => {
     //send message to back end here
-    fetch(`http://192.168.1.159:3000/synthrooms/${this.props.currentSynthroom.id}/add_message`, {
+    fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/add_message`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -547,7 +550,7 @@ class Synthroom extends Component {
   }
 
   handleSendNotes = (key, frequency) => {
-    fetch(`http://192.168.1.159:3000/synthrooms/${this.props.currentSynthroom.id}/send_notes`, {
+    fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/send_notes`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -562,7 +565,7 @@ class Synthroom extends Component {
   }
 
   handleRemoveNotes = (key) => {
-    fetch(`http://192.168.1.159:3000/synthrooms/${this.props.currentSynthroom.id}/remove_notes`, {
+    fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/remove_notes`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -575,7 +578,7 @@ class Synthroom extends Component {
   }
 
   sendPatchUpdate = (username, synthParameter, value) => {
-    fetch(`http://192.168.1.159:3000/synthrooms/${this.props.currentSynthroom.id}/update_patch`, {
+    fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/update_patch`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -589,7 +592,7 @@ class Synthroom extends Component {
   }
 
   handlePatchLoad = (patch) => {
-    fetch(`http://192.168.1.159:3000/synthrooms/${this.props.currentSynthroom.id}/load_patch`, {
+    fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/load_patch`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
