@@ -69,10 +69,19 @@ export const deletePatch = (patchID) => {
 }
 
 export const addActiveOscillator = (key, oscillatorNode, username, adsrGainNode, adsrFilterNode, startTime) => {
-  return {
-    type: ADD_ACTIVE_OSCILLATOR,
-    payload: {key, oscillatorNode, username, adsrGainNode, adsrFilterNode, startTime}
+  return function(dispatch) {
+    return Promise.resolve()
+    .then(() => {
+      let begin = Date.now()
+      dispatch({
+        type: ADD_ACTIVE_OSCILLATOR,
+        payload: {key, oscillatorNode, username, adsrGainNode, adsrFilterNode, startTime}
+      })
+      let end = Date.now()
+      let difference = end - begin
+    })
   }
+
 }
 
 export const removeActiveOscillator = (key, username) => {

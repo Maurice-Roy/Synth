@@ -16,6 +16,7 @@ class Synthroom extends Component {
     this.AudioContext = window.AudioContext || window.webkitAudioContext
     this.audioContext = new this.AudioContext()
     this.analyser = this.audioContext.createAnalyser();
+    console.log('current time in constuctor', this.audioContext.currentTime);
   }
 
   state = {
@@ -490,7 +491,6 @@ class Synthroom extends Component {
         break;
       case 'ADD_SOCKET_OSCILLATOR':
         //get oscillator start time
-        let startTime = this.audioContext.currentTime
 
         //create oscillator and save to state
         let osc = this.audioContext.createOscillator();
@@ -508,24 +508,30 @@ class Synthroom extends Component {
 
         //apply envelope to gain
         this.props.allCurrentUsers[data.payload.username].signalProcessing.gainEnvelope.gateTime = Infinity
-        this.props.allCurrentUsers[data.payload.username].signalProcessing.gainEnvelope.applyTo(adsrGainNode.gain, startTime)
 
         //apply envelope to filter frequency
         this.props.allCurrentUsers[data.payload.username].signalProcessing.filterEnvelope.gateTime = Infinity
         this.props.allCurrentUsers[data.payload.username].signalProcessing.filterEnvelope.peakLevel = this.props.allCurrentUsers[data.payload.username].currentPatchSettings.filterEnvelopePeakLevel
         this.props.allCurrentUsers[data.payload.username].signalProcessing.filterEnvelope.sustainLevel = this.props.allCurrentUsers[data.payload.username].currentPatchSettings.filterEnvelopeSustainLevel
-        this.props.allCurrentUsers[data.payload.username].signalProcessing.filterEnvelope.applyTo(adsrFilterNode.frequency, startTime)
 
         //connect nodes
         osc.connect(adsrGainNode);
         adsrGainNode.connect(adsrFilterNode);
         adsrFilterNode.connect(this.props.allCurrentUsers[data.payload.username].signalProcessing.oscillatorGainNode);
 
-        //start oscillator
-        osc.start(startTime);
-
+        let startTime = this.audioContext.currentTime
+        console.log('current time as start time', this.audioContext.currentTime);
         //save oscillator, gain, & filter to state - and oscillator start time
         this.props.addActiveOscillator(data.payload.key, osc, data.payload.username, adsrGainNode, adsrFilterNode, startTime)
+        .then(() => {
+          //start oscillator
+          if (this.props.activeOscillators[data.payload.username][data.payload.key]) {
+            this.props.activeOscillators[data.payload.username][data.payload.key].oscillatorNode.start(startTime);
+            this.props.allCurrentUsers[data.payload.username].signalProcessing.gainEnvelope.applyTo(adsrGainNode.gain, startTime)
+            this.props.allCurrentUsers[data.payload.username].signalProcessing.filterEnvelope.applyTo(adsrFilterNode.frequency, startTime)
+          }
+
+        })
         break;
       case 'REMOVE_SOCKET_OSCILLATOR':
         let playbackTime = this.audioContext.currentTime

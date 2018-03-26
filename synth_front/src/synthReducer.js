@@ -144,6 +144,8 @@ export default function synthReducer (state = defaultState, action) {
     case 'DELETE_PATCH':
       return defaultState
     case 'ADD_ACTIVE_OSCILLATOR':
+      console.log('inside ADD_ACTIVE_OSC');
+      console.log('action',action);
       return {
         ...state,
         activeOscillators: {
