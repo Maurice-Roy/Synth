@@ -524,7 +524,7 @@ class Synthroom extends Component {
         //save oscillator, gain, & filter to state - and oscillator start time
         this.props.addActiveOscillator(data.payload.key, osc, data.payload.username, adsrGainNode, adsrFilterNode, startTime)
         .then(() => {
-          //start oscillator
+          //start oscillator only if the key pressed exists in the activeOscillators
           if (this.props.activeOscillators[data.payload.username][data.payload.key]) {
             this.props.activeOscillators[data.payload.username][data.payload.key].oscillatorNode.start(startTime);
             this.props.allCurrentUsers[data.payload.username].signalProcessing.gainEnvelope.applyTo(adsrGainNode.gain, startTime)
@@ -543,6 +543,7 @@ class Synthroom extends Component {
           this.props.allCurrentUsers[data.payload.username].signalProcessing.filterEnvelope.applyTo(this.props.activeOscillators[data.payload.username][data.payload.key].adsrFilterNode.frequency, this.props.activeOscillators[data.payload.username][data.payload.key].startTime)
           this.props.allCurrentUsers[data.payload.username].signalProcessing.gainEnvelope.applyTo(this.props.activeOscillators[data.payload.username][data.payload.key].adsrGainNode.gain, this.props.activeOscillators[data.payload.username][data.payload.key].startTime)
           this.props.activeOscillators[data.payload.username][data.payload.key].oscillatorNode.stop(this.props.activeOscillators[data.payload.username][data.payload.key].startTime + this.props.allCurrentUsers[data.payload.username].signalProcessing.gainEnvelope.duration)
+          //need to wait for stop() to finish before removing the oscillator
           this.props.removeActiveOscillator(data.payload.key, data.payload.username)
         break;
       case 'ADD_MESSAGE':
