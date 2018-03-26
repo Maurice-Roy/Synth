@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   post '/synthrooms/:id/add_message', to: 'synthrooms#add_message'
   post '/synthrooms/:id/send_notes', to: 'synthrooms#send_notes'
   post '/synthrooms/:id/remove_notes', to: 'synthrooms#remove_notes'
+  post '/synthrooms/:id/remove_notes', to: 'synthrooms#force_remove_notes'
 
   mount ActionCable.server => '/cable'
 end

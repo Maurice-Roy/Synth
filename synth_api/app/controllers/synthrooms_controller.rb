@@ -110,6 +110,19 @@ class SynthroomsController < ApplicationController
     end
   end
 
+  def force_remove_notes
+    synthroom = Synthroom.find(params[:id])
+    if synthroom
+      SynthroomChannel.broadcast_to(synthroom, {
+        type: 'FORCE_REMOVE_SOCKET_OSCILLATOR',
+        payload: prepare_remove_note_data(params)
+      })
+      render json: prepare_remove_note_data(params)
+    else
+      render json: {error: 'There was an error removing your note!'}
+    end
+  end
+
   def prepare_patch_update(params)
     update_hash = {
       username: params[:username],

@@ -288,12 +288,26 @@ class Synthroom extends Component {
       if (!this.props.activeOscillators[this.props.username] || !this.props.activeOscillators[this.props.username][key]) { //if this note isnt playing, play it
         this.handleSendNotes(key, frequency)
       }
+      // else if (this.props.activeOscillators[this.props.username][key]) { // if this oscillator is active then force stop and then play
+      //   this.forceRemoveNotes(key)
+      //   //then
+      //   if (!this.props.activeOscillators[this.props.username] || !this.props.activeOscillators[this.props.username][key]) { //if this note isnt playing, play it
+      //     this.handleSendNotes(key, frequency)
+      //   }
+      // }
     } else if (Object.keys(this.noteKeyboardAssociations2ndOctave).includes(key)) { // if key is a note - octave 2
       let note = this.noteKeyboardAssociations2ndOctave[key]
       let frequency = this.noteFreq[this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave + 1][note]
       if (!this.props.activeOscillators[this.props.username] || !this.props.activeOscillators[this.props.username][key]) { //if this note isnt playing, play it
         this.handleSendNotes(key, frequency)
       }
+      // else if (this.props.activeOscillators[this.props.username][key]) { // if this oscillator is active then force stop and then play
+      //   this.forceRemoveNotes(key)
+      //   //then
+      //   if (!this.props.activeOscillators[this.props.username] || !this.props.activeOscillators[this.props.username][key]) { //if this note isnt playing, play it
+      //     this.handleSendNotes(key, frequency)
+      //   }
+      // }
     }
   }
 
@@ -546,6 +560,12 @@ class Synthroom extends Component {
           //need to wait for stop() to finish before removing the oscillator
           this.props.removeActiveOscillator(data.payload.key, data.payload.username)
         break;
+      case 'FORCE_REMOVE_SOCKET_OSCILLATOR':
+        if (this.props.activeOscillators[data.payload.username][data.payload.key])
+          this.props.activeOscillators[data.payload.username][data.payload.key].oscillatorNode.stop()
+          this.props.activeOscillators[data.payload.username][data.payload.key].oscillatorNode.disconnect()
+          this.props.removeActiveOscillator(data.payload.key, data.payload.username)
+        break;
       case 'ADD_MESSAGE':
         this.props.addNewMessage(data.payload)
         break;
@@ -587,6 +607,19 @@ class Synthroom extends Component {
 
   handleRemoveNotes = (key) => {
     fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/remove_notes`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        key: key,
+        username: this.props.username
+      })
+    })
+  }
+
+  forceRemoveNotes = (key) => {
+    fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/force_remove_notes`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
