@@ -4,11 +4,19 @@ import { fetchAllPatches, loadPatch, updatePatch, createNewPatch, deletePatch, a
 import { ActionCable } from 'react-actioncable-provider'
 import ADSREnvelope from "adsr-envelope"
 import logo from './scull4.png';
+import Spectral from './Spectral'
 // import topKeyboard from './top_keyboard.svg'
 // import bottomKeyboard from './bottom_keyboard.svg'
 import './Synthroom.css';
 
 class Synthroom extends Component {
+  constructor(props) {
+    super(props)
+    //initial variables
+    this.AudioContext = window.AudioContext || window.webkitAudioContext
+    this.audioContext = new this.AudioContext()
+    this.analyser = this.audioContext.createAnalyser();
+  }
 
   state = {
     messageInput: ''
@@ -140,10 +148,8 @@ class Synthroom extends Component {
   }
 
   componentDidMount = () => {
-    //initial variables
-    this.AudioContext = window.AudioContext || window.webkitAudioContext
-    this.audioContext = new this.AudioContext()
     this.masterGainNode = null;
+    this.masterLimiterNode = null;
     this.wavePicker = this.refs.waveformSelect
     this.volumeControl = this.refs.masterGain
     this.noteFreq = null;
@@ -177,8 +183,6 @@ class Synthroom extends Component {
 
     //initial fetch for patches from the backend
     this.props.fetchAllPatches()
-
-
 
     //keyboard keys => musical notes & controls
     this.controlsArray = ['219', '220', '221']
@@ -218,10 +222,20 @@ class Synthroom extends Component {
     window.addEventListener("keydown", this.keyPressed.bind(this), false)
     window.addEventListener("keyup", this.keyReleased.bind(this), false)
 
-    // create and connect the master gain node
+    // create master gain, limiter, and analyser nodes
     this.masterGainNode = this.audioContext.createGain();
-    this.masterGainNode.connect(this.audioContext.destination);
     this.masterGainNode.gain.value = this.volumeControl.value;
+    this.masterLimiterNode = this.audioContext.createDynamicsCompressor();
+    this.masterLimiterNode.threshold.value = -3
+    this.masterLimiterNode.knee.value = 0
+    this.masterLimiterNode.ratio.value = 20
+    this.masterLimiterNode.attack.value = 0
+    this.masterLimiterNode.release.value = 0.1
+
+    // connect master gain, limiter, and analyser nodes
+    this.masterGainNode.connect(this.masterLimiterNode);
+    this.masterLimiterNode.connect(this.analyser);
+    this.analyser.connect(this.audioContext.destination);
   }
 
   componentWillReceiveProps = (nextProps) => {
@@ -760,6 +774,7 @@ class Synthroom extends Component {
         </div>
         {/* <img src={topKeyboard} alt="" className="keyboard_graphic"/> */}
         {/* <img src={bottomKeyboard} alt="" className="keyboard_graphic"/> */}
+        <Spectral analyser={this.analyser}/>
       </div>
     );
   }
