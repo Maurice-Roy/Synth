@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { fetchAllPatches, loadPatch, updatePatch, createNewPatch, deletePatch, addActiveOscillator, removeActiveOscillator, addNewMessage, addUser, removeUser } from './actions'
 import { ActionCable } from 'react-actioncable-provider'
 import ADSREnvelope from "adsr-envelope"
-import logo from './scull4.png';
+// import logo from './scull4.png';
 import Spectral from './Spectral'
 // import topKeyboard from './top_keyboard.svg'
 // import bottomKeyboard from './bottom_keyboard.svg'
@@ -666,10 +666,10 @@ class Synthroom extends Component {
           channel={{channel: 'SynthroomChannel', synthroom_id: this.props.currentSynthroom.id, username: this.props.username}}
           onReceived={this.handleSocketResponse}
         />
-        <header className="Synthroom-header">
+        {/* <header className="Synthroom-header">
           <img src={logo} className="Synthroom-logo" alt="logo" />
           <h1 className="Synthroom-title">WELCOME TO HELL!</h1>
-        </header>
+        </header> */}
         <div className="patch-crud">
           <div className="select-save-delete">
             <span>Patches: </span>
