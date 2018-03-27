@@ -344,7 +344,7 @@ class Synthroom extends Component {
 
   displayMessages = () => {
     return this.props.currentSynthroom.messages.map((message) => {
-      return (<p>{message.username}: {message.content}</p>)
+      return (<li><b>{message.username}</b>: {message.content}</li>)
     })
   }
 
@@ -670,10 +670,10 @@ class Synthroom extends Component {
           {/* <img src={logo} className="Synthroom-logo" alt="logo" /> */}
           <h1 className="Synthroom-title">Sympathizer</h1>
           <div className="master-gain-container">
-            <span>Master Volume: </span>
             <input id="masterGain" type="range" min="0.0" max="1.0" step="0.01"
                 defaultValue="0.5" list="volumes" name="volume" ref="masterGain"
               onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/>
+            <p>Master</p>
             {/* <datalist id="volumes">
               <option value="0.0" label="Mute"/>
               <option value="1.0" label="100%"/>
@@ -720,12 +720,19 @@ class Synthroom extends Component {
         <div className="oscillator">
           <div className="waveform-select-container">
             <span>Waveform: </span>
-            <select name="waveform" value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.selectedWaveform} ref="waveformSelect" id="selectedWaveform" onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}>
-              <option value="sine">Sine</option>
+            {/* <select name="waveform" value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.selectedWaveform} ref="waveformSelect" id="selectedWaveform" onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}> */}
+            <form id="selectedWaveform">
+              <input type="radio" value="sine" name="selectedWaveform" checked={this.props.allCurrentUsers[this.props.username].currentPatchSettings.selectedWaveform === "sine"} onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.name, event.target.value)}/>Sine<br/>
+              <input type="radio" value="square" name="selectedWaveform" checked={this.props.allCurrentUsers[this.props.username].currentPatchSettings.selectedWaveform === "square"} onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.name, event.target.value)}/>Square<br/>
+              <input type="radio" value="sawtooth" name="selectedWaveform" checked={this.props.allCurrentUsers[this.props.username].currentPatchSettings.selectedWaveform === "sawtooth"} onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.name, event.target.value)}/>Sawtooth<br/>
+              <input type="radio" value="triangle" name="selectedWaveform" checked={this.props.allCurrentUsers[this.props.username].currentPatchSettings.selectedWaveform === "triangle"} onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.name, event.target.value)}/>Triangle<br/>
+            </form>
+
+              {/* <option value="sine">Sine</option>
               <option value="square" selected>Square</option>
               <option value="sawtooth">Sawtooth</option>
-              <option value="triangle">Triangle</option>
-            </select>
+              <option value="triangle">Triangle</option> */}
+            {/* </select> */}
           </div>
           <span>Current Octave: {this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave}</span><br/>
           <span>Oscillator Gain: </span>
@@ -761,9 +768,12 @@ class Synthroom extends Component {
             <option value="bandpass">Bandpass</option>
           </select><br/>
           <span>Peak: </span>
-          <input id="filterEnvelopePeakLevel" type="range" min="0.01" max="20000.0" step="0.01"
-              value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterEnvelopePeakLevel} list="peakLevels" name="peakLevel" ref="filterEnvelopePeakLevel"
-            onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
+          <input id="filterEnvelopePeakLevel" type="range" min="1.0" max="3.4" step="0.01"
+              value={Math.log(this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterEnvelopePeakLevel)/Math.log(20)} list="peakLevels" name="peakLevel" ref="filterEnvelopePeakLevel"
+            onChange={(event) => {
+              let convertedValue = Math.pow(20, event.target.value)
+              this.sendPatchUpdate(this.props.username, event.target.id, convertedValue)
+            }}/><br/>
           {/* <span>Frequency: </span>
           <input id="adsrFilterFrequency" type="range" min="10.0" max="20000.0" step="0.01"
               value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.adsrFilterFrequency} list="frequencies" name="frequency" ref="adsrFilterFrequency"
@@ -811,11 +821,13 @@ class Synthroom extends Component {
         </div> */}
 
         <div className="chat">
-          <span>---------------</span><br/>
-          {this.displayMessages()}
+          {/* <span>---------------</span><br/> */}
+          <div className="chat-log">
+            {this.displayMessages()}
+          </div>
           {/* form for new messages */}
-          <input type="text" placeholder="enter a message..." value={this.state.messageInput} onChange={(event) => this.setState({messageInput: event.target.value})}/>
-          <button onClick={() => {this.handleSendMessage(this.state.messageInput)}}>Send</button>
+          <input className="chat-input" type="text" placeholder="enter a message..." value={this.state.messageInput} onChange={(event) => this.setState({messageInput: event.target.value})}/>
+          <button className="chat-send-button" onClick={() => {this.handleSendMessage(this.state.messageInput)}}>Send</button>
         </div>
         {/* <img src={topKeyboard} alt="" className="keyboard_graphic"/> */}
         {/* <img src={bottomKeyboard} alt="" className="keyboard_graphic"/> */}

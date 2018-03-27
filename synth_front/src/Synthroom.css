@@ -1,8 +1,21 @@
+/*
+rgb(207, 207, 207)
+rgb(137, 137, 137)
+rgb(88, 88, 88)
+rgb(29, 29, 29)
+*/
+
+html {
+  background: linear-gradient(rgb(20, 20, 20), rgb(60, 60, 60));
+  height: 100%;
+}
+
 .Synthroom {
   text-align: center;
   display: grid;
   grid-template-rows: 25px 75px 40px 350px 250px 20px auto;
   grid-template-columns: auto 225px 325px 225px 325px auto;
+  font-family: sans-serif;
 }
 
 .Synthroom-logo {
@@ -12,75 +25,134 @@
 }
 
 .Synthroom-header {
-  background-color: rgb(168, 24, 24);
+  background: linear-gradient(rgb(88, 88, 88), rgb(137, 137, 137), rgb(88, 88, 88));
   /* height: 165px; */
   /* padding: 20px; */
   grid-column: 2 / 6;
   grid-row: 2 / 3;
   color: black;
-  font-family: 'Nosifer', cursive;
-  font-style: italic;
   border-radius: 15px 15px 0px 0px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  border: 1px solid black;
 }
 
 .Synthroom-title {
-  font-size: 1.5em;
+  font-family: 'Pacifico', cursive;
+  font-weight: 100;
+  font-style: italic;
+  font-size: 2em;
+  -o-text-overflow: clip;
+  text-overflow: clip;
+  letter-spacing: 3px;
+  white-space: pre;
+  text-shadow: 1px 1px 0 rgba(140,140,140,0.6) , -1px -1px 1px rgba(0,0,0,0.67);
+  /* text-shadow: -2px 0 1px rgb(30,242,241) , 2px 0 1px rgb(246,5,10); */
+  margin-left: 15px;
+  margin-bottom: 25px;
 }
 
 .master-gain-container {
+  margin-right: 15px;
 }
 
 .room-info {
-  grid-column: 2 / 4;
-  grid-row: 3 / 4;
-  display: flex;
-  justify-content: space-around;
-}
-
-.patch-crud {
   grid-column: 4 / 6;
   grid-row: 3 / 4;
   display: flex;
   justify-content: space-around;
+  background-color: rgb(207, 207, 207);
+  border: 1px solid black;
+  align-items: center;
+}
+
+.patch-crud {
+  grid-column: 2 / 4;
+  grid-row: 3 / 4;
+  display: flex;
+  justify-content: space-around;
+  background-color: rgb(207, 207, 207);
+  border: 1px solid black;
+  align-items: center;
 }
 
 .oscillator {
   grid-column: 2 / 3;
   grid-row: 4 / 5;
+  background-color: rgb(137, 137, 137);
+  border: 1px solid black;
 }
 
 .gain-envelope {
   grid-column: 3 / 4;
   grid-row: 4 / 5;
+  background-color: rgb(137, 137, 137);
+  border: 1px solid black;
 }
 
 .filter {
   grid-column: 4 / 5;
   grid-row: 4 / 5;
+  background-color: rgb(137, 137, 137);
+  border: 1px solid black;
 }
 
 .filter-envelope {
   grid-column: 5 / 6;
   grid-row: 4 / 5;
+  background-color: rgb(137, 137, 137);
+  border: 1px solid black;
 }
 
 .chat {
   grid-column: 4 / 6;
   grid-row: 5 / 6;
+  background-color: rgb(207, 207, 207);
+  border: 1px solid black;
+  display: grid;
+  grid-template-rows: 90% 10%;
+  grid-template-columns: 90% 10%;
+}
+
+.chat-log {
+  grid-column: 1 / 3;
+  grid-row: 1 / 2;
+  text-align: left;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 10px;
+  overflow: scroll;
+  hyphens: auto;
+}
+
+.chat-log li {
+  list-style-type: none;
+}
+
+.chat-input {
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+}
+
+.chat-send-button {
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
 }
 
 .spectral {
   grid-column: 2 / 4;
   grid-row: 5 / 6;
+  background-color: rgb(137, 137, 137);
+  border: 1px solid black;
 }
 
 .end-tab {
   grid-column: 2 / 6;
   grid-row: 6 / 7;
-  background-color: rgb(168, 24, 24);
+  background-color: rgb(88, 88, 88);
   border-radius: 0px 0px 15px 15px;
+  border: 1px solid black;
 }
 
 .Synthroom-intro {
