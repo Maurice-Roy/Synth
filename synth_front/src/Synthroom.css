@@ -1,5 +1,8 @@
 .Synthroom {
   text-align: center;
+  display: grid;
+  grid-template-rows: 25px 75px 40px 350px 250px 20px auto;
+  grid-template-columns: auto 225px 325px 225px 325px auto;
 }
 
 .Synthroom-logo {
@@ -10,15 +13,74 @@
 
 .Synthroom-header {
   background-color: rgb(168, 24, 24);
-  height: 165px;
-  padding: 20px;
+  /* height: 165px; */
+  /* padding: 20px; */
+  grid-column: 2 / 6;
+  grid-row: 2 / 3;
   color: black;
   font-family: 'Nosifer', cursive;
   font-style: italic;
+  border-radius: 15px 15px 0px 0px;
+  display: flex;
+  justify-content: space-between;
 }
 
 .Synthroom-title {
   font-size: 1.5em;
+}
+
+.master-gain-container {
+}
+
+.room-info {
+  grid-column: 2 / 4;
+  grid-row: 3 / 4;
+  display: flex;
+  justify-content: space-around;
+}
+
+.patch-crud {
+  grid-column: 4 / 6;
+  grid-row: 3 / 4;
+  display: flex;
+  justify-content: space-around;
+}
+
+.oscillator {
+  grid-column: 2 / 3;
+  grid-row: 4 / 5;
+}
+
+.gain-envelope {
+  grid-column: 3 / 4;
+  grid-row: 4 / 5;
+}
+
+.filter {
+  grid-column: 4 / 5;
+  grid-row: 4 / 5;
+}
+
+.filter-envelope {
+  grid-column: 5 / 6;
+  grid-row: 4 / 5;
+}
+
+.chat {
+  grid-column: 4 / 6;
+  grid-row: 5 / 6;
+}
+
+.spectral {
+  grid-column: 2 / 4;
+  grid-row: 5 / 6;
+}
+
+.end-tab {
+  grid-column: 2 / 6;
+  grid-row: 6 / 7;
+  background-color: rgb(168, 24, 24);
+  border-radius: 0px 0px 15px 15px;
 }
 
 .Synthroom-intro {

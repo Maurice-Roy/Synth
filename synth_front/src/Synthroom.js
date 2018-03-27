@@ -666,10 +666,25 @@ class Synthroom extends Component {
           channel={{channel: 'SynthroomChannel', synthroom_id: this.props.currentSynthroom.id, username: this.props.username}}
           onReceived={this.handleSocketResponse}
         />
-        {/* <header className="Synthroom-header">
-          <img src={logo} className="Synthroom-logo" alt="logo" />
-          <h1 className="Synthroom-title">WELCOME TO HELL!</h1>
-        </header> */}
+        <header className="Synthroom-header">
+          {/* <img src={logo} className="Synthroom-logo" alt="logo" /> */}
+          <h1 className="Synthroom-title">Sympathizer</h1>
+          <div className="master-gain-container">
+            <span>Master Volume: </span>
+            <input id="masterGain" type="range" min="0.0" max="1.0" step="0.01"
+                defaultValue="0.5" list="volumes" name="volume" ref="masterGain"
+              onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/>
+            {/* <datalist id="volumes">
+              <option value="0.0" label="Mute"/>
+              <option value="1.0" label="100%"/>
+            </datalist> */}
+          </div>
+        </header>
+        <div className="room-info">
+          {/* <p>Chord Mode: Soon™</p> */}
+          <span>Current Room: {this.props.currentSynthroom.name}</span>
+          <span>Username: {this.props.username}</span>
+        </div>
         <div className="patch-crud">
           <div className="select-save-delete">
             <span>Patches: </span>
@@ -702,31 +717,82 @@ class Synthroom extends Component {
             <input id="name" type="text" value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.name} onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/>
           </div>
         </div>
-        <div className="master-gain-container">
-          <span>Master Volume: </span>
-          <input id="masterGain" type="range" min="0.0" max="1.0" step="0.01"
-              defaultValue="0.5" list="volumes" name="volume" ref="masterGain"
-            onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/>
-          {/* <datalist id="volumes">
-            <option value="0.0" label="Mute"/>
-            <option value="1.0" label="100%"/>
-          </datalist> */}
-        </div>
-        <div className="waveform-select-container">
-          <span>Waveform: </span>
-          <select name="waveform" value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.selectedWaveform} ref="waveformSelect" id="selectedWaveform" onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}>
-            <option value="sine">Sine</option>
-            <option value="square" selected>Square</option>
-            <option value="sawtooth">Sawtooth</option>
-            <option value="triangle">Triangle</option>
-          </select>
-        </div>
-        <div className="patch-settings">
+        <div className="oscillator">
+          <div className="waveform-select-container">
+            <span>Waveform: </span>
+            <select name="waveform" value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.selectedWaveform} ref="waveformSelect" id="selectedWaveform" onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}>
+              <option value="sine">Sine</option>
+              <option value="square" selected>Square</option>
+              <option value="sawtooth">Sawtooth</option>
+              <option value="triangle">Triangle</option>
+            </select>
+          </div>
           <span>Current Octave: {this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave}</span><br/>
           <span>Oscillator Gain: </span>
           <input id="oscillatorGainNodeValue" type="range" min="0.0" max="1.0" step="0.01"
               value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.oscillatorGainNodeValue} list="volumes" name="volume" ref="oscillatorGainNodeValue"
             onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
+        </div>
+        <div className='gain-envelope'>
+          <span>Gain Envelope: </span><br/>
+          <span>Attack: </span>
+          <input id="gainEnvelopeAttackTime" type="range" min="0.01" max="10.0" step="0.01"
+              value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.gainEnvelopeAttackTime} list="attackTimes" name="attackTime" ref="gainEnvelopeAttackTime"
+            onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
+          <span>Decay: </span>
+          <input id="gainEnvelopeDecayTime" type="range" min="0.01" max="10.0" step="0.01"
+              value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.gainEnvelopeDecayTime} list="decayTimes" name="decayTime" ref="gainEnvelopeDecayTime"
+            onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
+          <span>Sustain: </span>
+          <input id="gainEnvelopeSustainLevel" type="range" min="0.01" max="1.0" step="0.01"
+              value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.gainEnvelopeSustainLevel} list="sustainLevels" name="sustainLevel" ref="gainEnvelopeSustainLevel"
+            onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
+          <span>Release: </span>
+          <input id="gainEnvelopeReleaseTime" type="range" min="0.01" max="10.0" step="0.01"
+              value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.gainEnvelopeReleaseTime} list="releaseTimes" name="releaseTime" ref="gainEnvelopeReleaseTime"
+            onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
+        </div>
+        <div className="filter">
+          <span>Filter: </span><br/>
+          <span>Type: </span>
+          <select name="adsrFilterType" id="adsrFilterType" value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.adsrFilterType} ref="adsrFilterType" id="adsrFilterType" onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}>
+            <option value="lowpass">Lowpass</option>
+            <option value="highpass" selected>Highpass</option>
+            <option value="bandpass">Bandpass</option>
+          </select><br/>
+          <span>Peak: </span>
+          <input id="filterEnvelopePeakLevel" type="range" min="0.01" max="20000.0" step="0.01"
+              value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterEnvelopePeakLevel} list="peakLevels" name="peakLevel" ref="filterEnvelopePeakLevel"
+            onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
+          {/* <span>Frequency: </span>
+          <input id="adsrFilterFrequency" type="range" min="10.0" max="20000.0" step="0.01"
+              value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.adsrFilterFrequency} list="frequencies" name="frequency" ref="adsrFilterFrequency"
+            onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/> */}
+          <span>Q: </span>
+          <input id="adsrFilterQ" type="range" min="0.01" max="50.0" step="0.01"
+              value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.adsrFilterQ} list="Qs" name="Q" ref="adsrFilterQ"
+            onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
+        </div>
+        <div className='filter-envelope'>
+          <span>Filter Envelope: </span><br/>
+          <span>Attack: </span>
+          <input id="filterEnvelopeAttackTime" type="range" min="0.01" max="10.0" step="0.01"
+              value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterEnvelopeAttackTime} list="attackTimes" name="attackTime" ref="filterEnvelopeAttackTime"
+            onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
+          <span>Decay: </span>
+          <input id="filterEnvelopeDecayTime" type="range" min="0.01" max="10.0" step="0.01"
+              value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterEnvelopeDecayTime} list="decayTimes" name="decayTime" ref="filterEnvelopeDecayTime"
+            onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
+          <span>Sustain: </span>
+          <input id="filterEnvelopeSustainLevel" type="range" min="0.01" max="1.0" step="0.01"
+              value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterEnvelopeSustainLevel} list="sustainLevels" name="sustainLevel" ref="filterEnvelopeSustainLevel"
+            onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
+          <span>Release: </span>
+          <input id="filterEnvelopeReleaseTime" type="range" min="0.01" max="10.0" step="0.01"
+              value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterEnvelopeReleaseTime} list="releaseTimes" name="releaseTime" ref="filterEnvelopeReleaseTime"
+            onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
+        </div>
+        {/* <div className="secondary-filter">
           <span>Secondary Filter: </span><br/>
           <span>Type: </span>
           <select name="filterType" id="filterType" value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterType} ref="filterType" id="filterType" onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}>
@@ -742,70 +808,9 @@ class Synthroom extends Component {
           <input id="filterQ" type="range" min="0.01" max="50.0" step="0.01"
               value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterQ} list="Qs" name="Q" ref="filterQ"
             onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
-          <div className='gain-envelope'>
-            <span>Gain Envelope: </span><br/>
-            <span>Attack: </span>
-            <input id="gainEnvelopeAttackTime" type="range" min="0.01" max="10.0" step="0.01"
-                value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.gainEnvelopeAttackTime} list="attackTimes" name="attackTime" ref="gainEnvelopeAttackTime"
-              onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
-            <span>Decay: </span>
-            <input id="gainEnvelopeDecayTime" type="range" min="0.01" max="10.0" step="0.01"
-                value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.gainEnvelopeDecayTime} list="decayTimes" name="decayTime" ref="gainEnvelopeDecayTime"
-              onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
-            <span>Sustain: </span>
-            <input id="gainEnvelopeSustainLevel" type="range" min="0.01" max="1.0" step="0.01"
-                value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.gainEnvelopeSustainLevel} list="sustainLevels" name="sustainLevel" ref="gainEnvelopeSustainLevel"
-              onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
-            <span>Release: </span>
-            <input id="gainEnvelopeReleaseTime" type="range" min="0.01" max="10.0" step="0.01"
-                value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.gainEnvelopeReleaseTime} list="releaseTimes" name="releaseTime" ref="gainEnvelopeReleaseTime"
-              onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
-          </div>
-          <div className='filter-envelope'>
-            <span>Primary Filter: </span><br/>
-            <span>Type: </span>
-            <select name="adsrFilterType" id="adsrFilterType" value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.adsrFilterType} ref="adsrFilterType" id="adsrFilterType" onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}>
-              <option value="lowpass">Lowpass</option>
-              <option value="highpass" selected>Highpass</option>
-              <option value="bandpass">Bandpass</option>
-            </select><br/>
-            <span>Frequency: </span>
-            <input id="adsrFilterFrequency" type="range" min="10.0" max="20000.0" step="0.01"
-                value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.adsrFilterFrequency} list="frequencies" name="frequency" ref="adsrFilterFrequency"
-              onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
-            <span>Q: </span>
-            <input id="adsrFilterQ" type="range" min="0.01" max="50.0" step="0.01"
-                value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.adsrFilterQ} list="Qs" name="Q" ref="adsrFilterQ"
-              onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
-            <span>Filter Envelope: </span><br/>
-            <span>Attack: </span>
-            <input id="filterEnvelopeAttackTime" type="range" min="0.01" max="10.0" step="0.01"
-                value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterEnvelopeAttackTime} list="attackTimes" name="attackTime" ref="filterEnvelopeAttackTime"
-              onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
-            <span>Decay: </span>
-            <input id="filterEnvelopeDecayTime" type="range" min="0.01" max="10.0" step="0.01"
-                value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterEnvelopeDecayTime} list="decayTimes" name="decayTime" ref="filterEnvelopeDecayTime"
-              onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
-            <span>Sustain: </span>
-            <input id="filterEnvelopeSustainLevel" type="range" min="0.01" max="1.0" step="0.01"
-                value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterEnvelopeSustainLevel} list="sustainLevels" name="sustainLevel" ref="filterEnvelopeSustainLevel"
-              onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
-            <span>Peak: </span>
-            <input id="filterEnvelopePeakLevel" type="range" min="0.01" max="20000.0" step="0.01"
-                value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterEnvelopePeakLevel} list="peakLevels" name="peakLevel" ref="filterEnvelopePeakLevel"
-              onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
-            <span>Release: </span>
-            <input id="filterEnvelopeReleaseTime" type="range" min="0.01" max="10.0" step="0.01"
-                value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterEnvelopeReleaseTime} list="releaseTimes" name="releaseTime" ref="filterEnvelopeReleaseTime"
-              onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
-          </div>
-        </div>
-        <div className="synthroom-info">
-          <p>Chord Mode: Soon™</p>
-          <p>Current Room: {this.props.currentSynthroom.name}</p>
-          <p>Username: {this.props.username}</p>
-        </div>
-        <div id="chat">
+        </div> */}
+
+        <div className="chat">
           <span>---------------</span><br/>
           {this.displayMessages()}
           {/* form for new messages */}
@@ -815,6 +820,7 @@ class Synthroom extends Component {
         {/* <img src={topKeyboard} alt="" className="keyboard_graphic"/> */}
         {/* <img src={bottomKeyboard} alt="" className="keyboard_graphic"/> */}
         <Spectral analyser={this.analyser}/>
+        <div className="end-tab"></div>
       </div>
     );
   }

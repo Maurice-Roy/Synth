@@ -16,8 +16,8 @@ class Spectral extends React.Component {
     this.draw()
   }
 
-  width = 760
-  height = 360
+  width = 550
+  height = 250
 
   x = d3.scaleLinear()
     .domain([0, 1024])
@@ -47,7 +47,7 @@ class Spectral extends React.Component {
 
   render () {
     return (
-      <canvas ref='spectralCanvas' id='spectralCanvas' width={this.width} height={this.height}></canvas>
+      <canvas className="spectral" ref='spectralCanvas' id='spectralCanvas' width={this.width} height={this.height}></canvas>
     )
   }
 }
