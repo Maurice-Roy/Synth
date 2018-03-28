@@ -176,6 +176,7 @@ export default function synthReducer (state = defaultState, action) {
         currentSynthroom: action.payload,
       }
     case 'SET_USERNAME':
+      localStorage.setItem("username", action.payload)
       return {
         ...state,
         username: action.payload,

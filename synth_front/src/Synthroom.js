@@ -189,6 +189,9 @@ class Synthroom extends Component {
     //initial fetch for patches from the backend
     this.props.fetchAllPatches()
 
+    //initialize this user
+    this.interval = setInterval(this.getUsers, 500)
+
     //keyboard keys => musical notes & controls
     this.controlsArray = ['219', '220', '221']
     this.noteKeyboardAssociations = {
@@ -247,11 +250,13 @@ class Synthroom extends Component {
     console.log(nextProps);
 
     //send signal to all users in room to prompt gathering user data
-    if(nextProps.allCurrentUsers[nextProps.username] && !nextProps.allCurrentUsers[nextProps.username].signalProcessing.oscillatorGainNode){
-      fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/retrieve_user_data`, {
-        method: "POST"
-      })
-    }
+
+    // if(nextProps.allCurrentUsers[nextProps.username] && (!nextProps.allCurrentUsers[nextProps.username].signalProcessing.oscillatorGainNode || !nextProps.allCurrentUsers[nextProps.username].signalProcessing.filterNode || !nextProps.allCurrentUsers[nextProps.username].signalProcessing.gainEnvelope || !nextProps.allCurrentUsers[nextProps.username].signalProcessing.filterEnvelope)){
+    //   console.log('FETCHING FROM COMP WILL RECEIVE PROPS');
+    //   fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/retrieve_user_data`, {
+    //     method: "POST"
+    //   })
+    // }
 
     // link the masterGain Slider value to currentPatchSettings
     this.refs.masterGain.value = nextProps.allCurrentUsers[this.props.username].currentPatchSettings.masterGain
@@ -261,68 +266,72 @@ class Synthroom extends Component {
   }
 
   keyPressed = (event) => {
-    let key = (event.detail || event.which).toString()
+    if (event.target.tagName !== "INPUT") {
+      let key = (event.detail || event.which).toString()
 
-    if (this.controlsArray.includes(key)) { //if key is [ or ] or \
-      switch (key) {
-        case '219': // currentOctave down
-          if (this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave > 0) {
-            let newOctave = this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave -= 1
-            console.log(newOctave);
-            this.sendPatchUpdate(this.props.username, 'currentOctave', newOctave)
-          }
-          break;
-        case '221': // currentOctave up
-          if (this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave < 7) {
-            let newOctave = this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave += 1
-            console.log(newOctave);
-            this.sendPatchUpdate(this.props.username, 'currentOctave', newOctave)
-          }
-          break;
-        case '220':
-          //toggle chord mode
-          break;
-        default:
-          console.log('Hit default case in controls array switch.');
-          break;
+      if (this.controlsArray.includes(key)) { //if key is [ or ] or \
+        switch (key) {
+          case '219': // currentOctave down
+            if (this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave > 0) {
+              let newOctave = this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave -= 1
+              console.log(newOctave);
+              this.sendPatchUpdate(this.props.username, 'currentOctave', newOctave)
+            }
+            break;
+          case '221': // currentOctave up
+            if (this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave < 7) {
+              let newOctave = this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave += 1
+              console.log(newOctave);
+              this.sendPatchUpdate(this.props.username, 'currentOctave', newOctave)
+            }
+            break;
+          case '220':
+            //toggle chord mode
+            break;
+          default:
+            console.log('Hit default case in controls array switch.');
+            break;
+        }
+      } else if (Object.keys(this.noteKeyboardAssociations).includes(key)) { // if key is a note - octave 1
+        let note = this.noteKeyboardAssociations[key]
+        let frequency = this.noteFreq[this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave][note]
+        if (!this.props.activeOscillators[this.props.username] || !this.props.activeOscillators[this.props.username][key]) { //if this note isnt playing, play it
+          this.handleSendNotes(key, frequency)
+        }
+        // else if (this.props.activeOscillators[this.props.username][key]) { // if this oscillator is active then force stop and then play
+        //   this.forceRemoveNotes(key)
+        //   //then
+        //   if (!this.props.activeOscillators[this.props.username] || !this.props.activeOscillators[this.props.username][key]) { //if this note isnt playing, play it
+        //     this.handleSendNotes(key, frequency)
+        //   }
+        // }
+      } else if (Object.keys(this.noteKeyboardAssociations2ndOctave).includes(key)) { // if key is a note - octave 2
+        let note = this.noteKeyboardAssociations2ndOctave[key]
+        let frequency = this.noteFreq[this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave + 1][note]
+        if (!this.props.activeOscillators[this.props.username] || !this.props.activeOscillators[this.props.username][key]) { //if this note isnt playing, play it
+          this.handleSendNotes(key, frequency)
+        }
+        // else if (this.props.activeOscillators[this.props.username][key]) { // if this oscillator is active then force stop and then play
+        //   this.forceRemoveNotes(key)
+        //   //then
+        //   if (!this.props.activeOscillators[this.props.username] || !this.props.activeOscillators[this.props.username][key]) { //if this note isnt playing, play it
+        //     this.handleSendNotes(key, frequency)
+        //   }
+        // }
       }
-    } else if (Object.keys(this.noteKeyboardAssociations).includes(key)) { // if key is a note - octave 1
-      let note = this.noteKeyboardAssociations[key]
-      let frequency = this.noteFreq[this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave][note]
-      if (!this.props.activeOscillators[this.props.username] || !this.props.activeOscillators[this.props.username][key]) { //if this note isnt playing, play it
-        this.handleSendNotes(key, frequency)
-      }
-      // else if (this.props.activeOscillators[this.props.username][key]) { // if this oscillator is active then force stop and then play
-      //   this.forceRemoveNotes(key)
-      //   //then
-      //   if (!this.props.activeOscillators[this.props.username] || !this.props.activeOscillators[this.props.username][key]) { //if this note isnt playing, play it
-      //     this.handleSendNotes(key, frequency)
-      //   }
-      // }
-    } else if (Object.keys(this.noteKeyboardAssociations2ndOctave).includes(key)) { // if key is a note - octave 2
-      let note = this.noteKeyboardAssociations2ndOctave[key]
-      let frequency = this.noteFreq[this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave + 1][note]
-      if (!this.props.activeOscillators[this.props.username] || !this.props.activeOscillators[this.props.username][key]) { //if this note isnt playing, play it
-        this.handleSendNotes(key, frequency)
-      }
-      // else if (this.props.activeOscillators[this.props.username][key]) { // if this oscillator is active then force stop and then play
-      //   this.forceRemoveNotes(key)
-      //   //then
-      //   if (!this.props.activeOscillators[this.props.username] || !this.props.activeOscillators[this.props.username][key]) { //if this note isnt playing, play it
-      //     this.handleSendNotes(key, frequency)
-      //   }
-      // }
     }
   }
 
   keyReleased = (event) => {
-    console.log(this.props);
-    let key = (event.detail || event.which).toString()
+    if (event.target.tagName !== "INPUT") {
+      console.log(this.props);
+      let key = (event.detail || event.which).toString()
 
-    if (Object.keys(this.noteKeyboardAssociations).includes(key)) { // if key is a note - octave 1
-      this.handleRemoveNotes(key)
-    } else if (Object.keys(this.noteKeyboardAssociations2ndOctave).includes(key)) { // if key is a note - octave 2
-      this.handleRemoveNotes(key)
+      if (Object.keys(this.noteKeyboardAssociations).includes(key)) { // if key is a note - octave 1
+        this.handleRemoveNotes(key)
+      } else if (Object.keys(this.noteKeyboardAssociations2ndOctave).includes(key)) { // if key is a note - octave 2
+        this.handleRemoveNotes(key)
+      }
     }
   }
 
@@ -662,7 +671,20 @@ class Synthroom extends Component {
     })
   }
 
+  getUsers = () => {
+    if(this.props.allCurrentUsers[this.props.username] && (!this.props.allCurrentUsers[this.props.username].signalProcessing.oscillatorGainNode || !this.props.allCurrentUsers[this.props.username].signalProcessing.filterNode || !this.props.allCurrentUsers[this.props.username].signalProcessing.gainEnvelope || !this.props.allCurrentUsers[this.props.username].signalProcessing.filterEnvelope)){
+      console.log('FETCHING FROM COMP WILL RECEIVE PROPS');
+      fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/retrieve_user_data`, {
+        method: "POST"
+      })
+      .then(() => {
+        clearInterval(this.interval)
+      })
+    }
+  }
+
   render() {
+
     console.log('props in synthroom',this.props);
     return (
       <div className="Synthroom">
@@ -686,7 +708,7 @@ class Synthroom extends Component {
                 step={0.01}
                 ref="masterGain"
               /> */}
-            <p>MASTER</p>
+            <p className="master-header">MASTER</p>
             {/* <datalist id="volumes">
               <option value="0.0" label="Mute"/>
               <option value="1.0" label="100%"/>
@@ -702,6 +724,7 @@ class Synthroom extends Component {
           <div className="select-save-delete">
             <span>Patches: </span>
             <select name="patches" id="patchSelect" defaultValue="Default" onChange={(event) => {
+              event.stopPropagation()
               let selectedPatch
               if (event.target[event.target.selectedIndex].value !== "Default") {
                 selectedPatch = this.props.allPatches.find((patch) => patch.id === parseInt(event.target[event.target.selectedIndex].value, 10))
@@ -727,7 +750,9 @@ class Synthroom extends Component {
               this.props.createNewPatch(this.props.username, this.props.allCurrentUsers[this.props.username].currentPatchSettings)
               .then(() => this.props.fetchAllPatches())
             }}>SAVE AS</button>
-            <input id="name" type="text" value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.name} onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/>
+            <input id="name" type="text" value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.name} onChange={(event) => {
+              this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)
+            }}/>
           </div>
         </div>
         <div className="oscillator">
@@ -863,6 +888,7 @@ class Synthroom extends Component {
           <div className="chat-log">
             <p></p>
             {this.displayMessages()}
+            <p></p>
           </div>
           {/* form for new messages */}
           <input className="chat-input" type="text" placeholder="enter a message..." value={this.state.messageInput} onChange={(event) => this.setState({messageInput: event.target.value})}/>

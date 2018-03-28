@@ -13,6 +13,9 @@ class App extends Component {
 
   componentDidMount = () => {
     this.props.fetchAllSynthrooms()
+    if (localStorage.getItem("username")) {
+      this.props.setUsername(localStorage.getItem("username"))
+    }
   }
 
   componentDidCatch = (error, info) => {
