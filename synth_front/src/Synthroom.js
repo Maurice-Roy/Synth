@@ -4,6 +4,9 @@ import { fetchAllPatches, loadPatch, updatePatch, createNewPatch, deletePatch, a
 import { ActionCable } from 'react-actioncable-provider'
 import ADSREnvelope from "adsr-envelope"
 // import logo from './scull4.png';
+import palmTree from './palm_tree.png'
+import bust from './bustmac.gif'
+import spectralGrid from './spectral_grid.png'
 import Spectral from './Spectral'
 // import topKeyboard from './top_keyboard.svg'
 // import bottomKeyboard from './bottom_keyboard.svg'
@@ -762,11 +765,12 @@ class Synthroom extends Component {
         <div className="filter">
           <span>Filter: </span><br/>
           <span>Type: </span>
-          <select name="adsrFilterType" id="adsrFilterType" value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.adsrFilterType} ref="adsrFilterType" id="adsrFilterType" onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}>
-            <option value="lowpass">Lowpass</option>
-            <option value="highpass" selected>Highpass</option>
-            <option value="bandpass">Bandpass</option>
-          </select><br/>
+
+          <form id="adsrFilterType">
+            <input type="radio" value="lowpass" name="adsrFilterType" checked={this.props.allCurrentUsers[this.props.username].currentPatchSettings.adsrFilterType === "lowpass"} onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.name, event.target.value)}/>Lowpass<br/>
+            <input type="radio" value="highpass" name="adsrFilterType" checked={this.props.allCurrentUsers[this.props.username].currentPatchSettings.adsrFilterType === "highpass"} onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.name, event.target.value)}/>Hipass<br/>
+            <input type="radio" value="bandpass" name="adsrFilterType" checked={this.props.allCurrentUsers[this.props.username].currentPatchSettings.adsrFilterType === "bandpass"} onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.name, event.target.value)}/>Bandpass<br/>
+          </form>
           <span>Peak: </span>
           <input id="filterEnvelopePeakLevel" type="range" min="1.0" max="3.4" step="0.01"
               value={Math.log(this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterEnvelopePeakLevel)/Math.log(20)} list="peakLevels" name="peakLevel" ref="filterEnvelopePeakLevel"
@@ -823,6 +827,7 @@ class Synthroom extends Component {
         <div className="chat">
           {/* <span>---------------</span><br/> */}
           <div className="chat-log">
+            <p></p>
             {this.displayMessages()}
           </div>
           {/* form for new messages */}
@@ -832,7 +837,14 @@ class Synthroom extends Component {
         {/* <img src={topKeyboard} alt="" className="keyboard_graphic"/> */}
         {/* <img src={bottomKeyboard} alt="" className="keyboard_graphic"/> */}
         <Spectral analyser={this.analyser}/>
+        <img className="spectral-grid" src={spectralGrid} alt=""/>
+        <div className="canvas-shader"/>
+        <div className="dropshadow"/>
         <div className="end-tab"></div>
+        <img className="palm" id="palm-left" src={palmTree} alt=""/>
+        <img className="palm" id="palm-right" src={palmTree} alt=""/>
+        <img className="bust" id="bust-left" src={bust} alt=""/>
+        <img className="bust" id="bust-right" src={bust} alt=""/>
       </div>
     );
   }

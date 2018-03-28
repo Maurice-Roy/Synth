@@ -16,8 +16,8 @@ class Spectral extends React.Component {
     this.draw()
   }
 
-  width = 550
-  height = 250
+  width = 546
+  height = 246
 
   x = d3.scaleLinear()
     .domain([0, 1024])
@@ -33,7 +33,7 @@ class Spectral extends React.Component {
 
   draw = () => {
     this.props.analyser.getByteFrequencyData(this.dataArray)
-    this.canvasCtx.fillStyle = 'rgba(33,33,33)'
+    this.canvasCtx.fillStyle = 'rgb(35, 35, 35)'
     this.canvasCtx.fillRect(0, 0, this.width, this.height)
     for (let i in this.dataArray) {
       this.canvasCtx.beginPath()
