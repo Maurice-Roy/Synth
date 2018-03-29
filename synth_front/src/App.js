@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { fetchAllSynthrooms, createNewSynthroom, setUsername } from './actions'
 import SynthroomContainer from './SynthroomContainer'
 import { Route, withRouter } from 'react-router-dom'
+import liquidCrystal from './liquid_crystal.gif'
 
 class App extends Component {
 
@@ -43,21 +44,23 @@ class App extends Component {
 
   render() {
     return (
-      <div>
+      <div className="master-container">
         <Route exact path="/" render={(routerProps) => {
           //create a component for this select
           return(
-            <div>
-              <input type="text" placeholder="enter username..." value={this.state.usernameInput} onChange={(event) => this.setState({usernameInput: event.target.value})}/>
-              <button onClick={this.handleSetUsername}>Set Username</button>
+            <div className="landing">
+              <input className="username-input" type="text" placeholder="enter username..." value={this.state.usernameInput} onChange={(event) => this.setState({usernameInput: event.target.value})}/>
+              <button onClick={this.handleSetUsername}>SET USERNAME</button>
               <br/>
               <select name="roomSelect" id="roomSelect" onChange={this.handleSelect}>
-                <option disabled selected value>select existing room</option>
+                <option disabled selected value>SELECT ROOM</option>
                 {this.listSynthrooms()}
               </select>
-              <span> or </span>
+              <span> OR </span>
               <input type="text" placeholder="enter new room name..." value={this.state.newSynthroomInput} onChange={(event) => this.setState({newSynthroomInput: event.target.value})}/>
-              <button onClick={this.handleCreate}>Create</button>
+              <button onClick={this.handleCreate}>CREATE</button>
+              <img className="crystal" id="crystal-left" src={liquidCrystal} alt=""/>
+              <img className="crystal" id="crystal-right" src={liquidCrystal} alt=""/>
             </div>
           )
         }}/>

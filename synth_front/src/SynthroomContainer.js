@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import Synthroom from './Synthroom'
 import { loadSynthroom } from './actions'
+import rainbowDongle from './rainbow_dongle.gif'
 
 class SynthroomContainer extends React.Component {
   componentDidMount = () => {
@@ -14,7 +15,7 @@ class SynthroomContainer extends React.Component {
 		if (this.props.currentSynthroom && this.props.username){
 			return <Synthroom/>
 		} else {
-			return <h1>Loading</h1>
+			return <img className="rainbowDongle" id="rainbow-dongle" src={rainbowDongle} alt=""/>
 		}
 	}
 }

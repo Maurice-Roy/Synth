@@ -14,6 +14,7 @@ import Spectral from './Spectral'
 import './Synthroom.css';
 
 class Synthroom extends Component {
+  /*💀 WELCOME TO HELL 💀*/
   constructor(props) {
     super(props)
     //initial variables
@@ -165,9 +166,9 @@ class Synthroom extends Component {
       master_gain: 0.5,
       current_octave: 4,
       oscillator_gain_node_value: 0.5,
-      filter_frequency: 10000.0,
+      filter_frequency: 20.0,
       filter_q: 1.0,
-      filter_type: 'lowpass',
+      filter_type: 'highpass',
       gain_envelope_attack_time: 0.2,
       gain_envelope_decay_time: 0.25,
       gain_envelope_sustain_level: 0.8,
@@ -266,7 +267,8 @@ class Synthroom extends Component {
   }
 
   keyPressed = (event) => {
-    if (event.target.tagName !== "INPUT") {
+    console.log(event);
+    if (event.target.type !== "text") {
       let key = (event.detail || event.which).toString()
 
       if (this.controlsArray.includes(key)) { //if key is [ or ] or \
@@ -323,7 +325,7 @@ class Synthroom extends Component {
   }
 
   keyReleased = (event) => {
-    if (event.target.tagName !== "INPUT") {
+    if (event.target.type !== "text") {
       console.log(this.props);
       let key = (event.detail || event.which).toString()
 
@@ -357,7 +359,7 @@ class Synthroom extends Component {
 
   displayMessages = () => {
     return this.props.currentSynthroom.messages.map((message) => {
-      return (<li><b>{message.username}</b>: {message.content}</li>)
+      return (<li key={message}><b>{message.username}</b>: {message.content}</li>)
     })
   }
 
@@ -722,7 +724,7 @@ class Synthroom extends Component {
         </div>
         <div className="patch-crud">
           <div className="select-save-delete">
-            <span>Patches: </span>
+            <span>PATCH</span>
             <select name="patches" id="patchSelect" defaultValue="Default" onChange={(event) => {
               event.stopPropagation()
               let selectedPatch
@@ -803,7 +805,7 @@ class Synthroom extends Component {
             <br/><br/><br/><p>S</p>
           </div>
           <div className="gainEnvelopeReleaseTime">
-            <input id="gainEnvelopeReleaseTime" type="range" min="0.01" max="10.0" step="0.01"
+            <input id="gainEnvelopeReleaseTime" type="range" min="0.01" max="20.0" step="0.01"
                 value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.gainEnvelopeReleaseTime} list="releaseTimes" name="releaseTime" ref="gainEnvelopeReleaseTime"
               onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
             <br/><br/><br/><p>R</p>
@@ -859,7 +861,7 @@ class Synthroom extends Component {
             <br/><br/><br/><p>S</p>
           </div>
           <div className="filterEnvelopeReleaseTime">
-            <input id="filterEnvelopeReleaseTime" type="range" min="0.01" max="10.0" step="0.01"
+            <input id="filterEnvelopeReleaseTime" type="range" min="0.01" max="20.0" step="0.01"
                 value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterEnvelopeReleaseTime} list="releaseTimes" name="releaseTime" ref="filterEnvelopeReleaseTime"
               onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
             <br/><br/><br/><p>R</p>

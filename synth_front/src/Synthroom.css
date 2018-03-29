@@ -18,6 +18,16 @@ html {
   cursor: crosshair;
 }
 
+select {
+  -webkit-appearance: none;
+  border: none;
+  border-radius: 0 0 0 0;
+  padding: 5px;
+  box-shadow: inset 0 0 4px 1px rgb(30, 30, 30, 0.6);
+  border: 2px solid rgb(75, 75, 75);
+  font-size: 12px;
+}
+
 input {
   cursor: grab;
 }
@@ -38,6 +48,58 @@ button {
   min-width: 100%;
   min-height: 100%;
   z-index: -5;
+}
+
+.master-container {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+
+.landing {
+  background: rgb(140, 140, 140);
+  position: relative;
+  padding: 15px;
+  margin: 0 auto;
+  width: 360px;
+  border-radius: 10px 10px 10px 10px;
+  text-align: center;
+  margin-top: 260px;
+  box-shadow: 0px 1px 1px 0px rgb(88, 88, 88), 0px 4px 0px 0px rgb(45, 45, 45), 0px -1px 1px 0px rgb(88, 88, 88), 0px 4px 20px 6px rgb(29, 29, 29, 0.5), inset 0px 0px 10px 4px rgb(29, 29, 29, 0.5);
+}
+
+.landing input {
+  background: rgb(184, 233, 154);
+  border: 2px solid rgb(75, 75, 75);
+  padding: 2px;
+  padding-left: 4px;
+  width: 120px;
+  font-size: 20px;
+  font-family: 'VT323', monospace;
+  text-align: left;
+  text-overflow: ellipsis;
+  box-shadow: inset 0 0 4px 1px rgb(30, 30, 30, 0.6);
+}
+
+.landing button {
+  padding: 5px;
+  padding-left: 8px;
+  padding-right: 8px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+button {
+  text-decoration: none;
+  border: none;
+  border-radius: 0 0 0 0;
+  display: inline-block;
+  cursor: grabbing;
+  box-shadow: 1px 1px 2px 1px rgb(30, 30, 30, 0.5);
+}
+
+.username-input {
+  margin-bottom: 10px;
 }
 
 .Synthroom {
@@ -119,6 +181,15 @@ button {
   margin-right: 5px;
 }
 
+.patch-crud select {
+  width: 120px;
+  text-overflow: ellipsis;
+  background: rgb(184, 233, 154);
+  font-family: 'VT323', monospace;
+  font-size: 20px;
+  padding: 2px;
+}
+
 .patch-crud input {
   /* margin-left: -50px; */
   background: rgb(184, 233, 154);
@@ -131,6 +202,11 @@ button {
   text-align: left;
   text-overflow: ellipsis;
   box-shadow: inset 0 0 4px 1px rgb(30, 30, 30, 0.5);
+}
+
+#patchSelect {
+  margin-left: 7px;
+  margin-right: 4px;
 }
 
 .room-info {
@@ -502,6 +578,28 @@ canvas {
 #palm-right {
   right: -150px;
   transform: scaleX(-1);
+}
+
+.crystal {
+  position: fixed;
+  display: block;
+  width: 27%;
+  top: 140px;
+}
+
+#crystal-left {
+  left: 60px;
+}
+
+#crystal-right {
+  right: 60px;
+  transform: scaleX(-1);
+}
+
+#rainbow-dongle {
+  display: block;
+  margin: auto;
+  margin-top: 100px;
 }
 
 .bust {
