@@ -698,7 +698,7 @@ class Synthroom extends Component {
           {/* <img src={logo} className="Synthroom-logo" alt="logo" /> */}
           <h1 className="Synthroom-title">Sympathizer</h1>
           <div className="master-gain-container">
-            <input id="masterGain" type="range" min="0.0" max="1.0" step="0.01" ref="masterGain"
+            <input className="slider" id="masterGain" type="range" min="0.0" max="1.0" step="0.01" ref="masterGain"
               onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/>
               {/* <Knob
                 id="masterGain"
@@ -778,34 +778,34 @@ class Synthroom extends Component {
             <span>OCTAVE </span><span className="octave-view">{this.props.allCurrentUsers[this.props.username].currentPatchSettings.currentOctave}</span><br/>
           </div>
           <div className="oscillator-gain-container">
-            <input id="oscillatorGainNodeValue" type="range" min="0.0" max="1.0" step="0.01"
+            <input className="slider" id="oscillatorGainNodeValue" type="range" min="0.0" max="1.0" step="0.01"
               value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.oscillatorGainNodeValue} list="volumes" name="volume" ref="oscillatorGainNodeValue"
               onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
-              <span>GAIN</span>
+            <p className="oscillator-gain-header">GAIN</p>
           </div>
         </div>
         <div className='gain-envelope'>
           <span className="gain-envelope-header"><b>GAIN ENVELOPE</b></span>
           <div className="gainEnvelopeAttackTime">
-            <input id="gainEnvelopeAttackTime" type="range" min="0.01" max="10.0" step="0.01"
+            <input className="slider" id="gainEnvelopeAttackTime" type="range" min="0.01" max="10.0" step="0.01"
                 value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.gainEnvelopeAttackTime} list="attackTimes" name="attackTime" ref="gainEnvelopeAttackTime"
               onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
             <br/><br/><br/><p>A</p>
           </div>
           <div className="gainEnvelopeDecayTime">
-            <input id="gainEnvelopeDecayTime" type="range" min="0.01" max="10.0" step="0.01"
+            <input className="slider" id="gainEnvelopeDecayTime" type="range" min="0.01" max="10.0" step="0.01"
                 value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.gainEnvelopeDecayTime} list="decayTimes" name="decayTime" ref="gainEnvelopeDecayTime"
               onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
             <br/><br/><br/><p>D</p>
           </div>
           <div className="gainEnvelopeSustainLevel">
-            <input id="gainEnvelopeSustainLevel" type="range" min="0.01" max="1.0" step="0.01"
+            <input className="slider" id="gainEnvelopeSustainLevel" type="range" min="0.01" max="1.0" step="0.01"
                 value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.gainEnvelopeSustainLevel} list="sustainLevels" name="sustainLevel" ref="gainEnvelopeSustainLevel"
               onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
             <br/><br/><br/><p>S</p>
           </div>
           <div className="gainEnvelopeReleaseTime">
-            <input id="gainEnvelopeReleaseTime" type="range" min="0.01" max="20.0" step="0.01"
+            <input className="slider" id="gainEnvelopeReleaseTime" type="range" min="0.01" max="20.0" step="0.01"
                 value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.gainEnvelopeReleaseTime} list="releaseTimes" name="releaseTime" ref="gainEnvelopeReleaseTime"
               onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
             <br/><br/><br/><p>R</p>
@@ -821,7 +821,7 @@ class Synthroom extends Component {
             </form>
           </div>
           <div className="filterEnvelopePeakLevel">
-            <input id="filterEnvelopePeakLevel" type="range" min="1.0" max="3.4" step="0.01"
+            <input className="slider" id="filterEnvelopePeakLevel" type="range" min="1.0" max="3.4" step="0.01"
                 value={Math.log(this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterEnvelopePeakLevel)/Math.log(20)} list="peakLevels" name="peakLevel" ref="filterEnvelopePeakLevel"
               onChange={(event) => {
                 let convertedValue = Math.pow(20, event.target.value)
@@ -834,7 +834,7 @@ class Synthroom extends Component {
               value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.adsrFilterFrequency} list="frequencies" name="frequency" ref="adsrFilterFrequency"
             onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/> */}
           <div className="filterEnvelopeQ">
-            <input id="adsrFilterQ" type="range" min="0.01" max="50.0" step="0.01"
+            <input className="slider" id="adsrFilterQ" type="range" min="0.01" max="50.0" step="0.01"
                 value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.adsrFilterQ} list="Qs" name="Q" ref="adsrFilterQ"
               onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
             <br/><br/><br/><p>Q</p>
@@ -843,25 +843,25 @@ class Synthroom extends Component {
         <div className='filter-envelope'>
           <span className="filter-envelope-header"><b>FILTER ENVELOPE</b></span>
           <div className="filterEnvelopeAttackTime">
-            <input id="filterEnvelopeAttackTime" type="range" min="0.01" max="10.0" step="0.01"
+            <input className="slider" id="filterEnvelopeAttackTime" type="range" min="0.01" max="10.0" step="0.01"
                 value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterEnvelopeAttackTime} list="attackTimes" name="attackTime" ref="filterEnvelopeAttackTime"
               onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
             <br/><br/><br/><p>A</p>
           </div>
           <div className="filterEnvelopeDecayTime">
-            <input id="filterEnvelopeDecayTime" type="range" min="0.01" max="10.0" step="0.01"
+            <input className="slider" id="filterEnvelopeDecayTime" type="range" min="0.01" max="10.0" step="0.01"
                 value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterEnvelopeDecayTime} list="decayTimes" name="decayTime" ref="filterEnvelopeDecayTime"
               onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
             <br/><br/><br/><p>D</p>
           </div>
           <div className="filterEnvelopeSustainLevel">
-            <input id="filterEnvelopeSustainLevel" type="range" min="0.01" max="1.0" step="0.01"
+            <input className="slider" id="filterEnvelopeSustainLevel" type="range" min="0.01" max="1.0" step="0.01"
                 value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterEnvelopeSustainLevel} list="sustainLevels" name="sustainLevel" ref="filterEnvelopeSustainLevel"
               onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
             <br/><br/><br/><p>S</p>
           </div>
           <div className="filterEnvelopeReleaseTime">
-            <input id="filterEnvelopeReleaseTime" type="range" min="0.01" max="20.0" step="0.01"
+            <input className="slider" id="filterEnvelopeReleaseTime" type="range" min="0.01" max="20.0" step="0.01"
                 value={this.props.allCurrentUsers[this.props.username].currentPatchSettings.filterEnvelopeReleaseTime} list="releaseTimes" name="releaseTime" ref="filterEnvelopeReleaseTime"
               onChange={(event) => this.sendPatchUpdate(this.props.username, event.target.id, event.target.value)}/><br/>
             <br/><br/><br/><p>R</p>
