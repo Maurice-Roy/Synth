@@ -254,7 +254,7 @@ class Synthroom extends Component {
 
     // if(nextProps.allCurrentUsers[nextProps.username] && (!nextProps.allCurrentUsers[nextProps.username].signalProcessing.oscillatorGainNode || !nextProps.allCurrentUsers[nextProps.username].signalProcessing.filterNode || !nextProps.allCurrentUsers[nextProps.username].signalProcessing.gainEnvelope || !nextProps.allCurrentUsers[nextProps.username].signalProcessing.filterEnvelope)){
     //   console.log('FETCHING FROM COMP WILL RECEIVE PROPS');
-    //   fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/retrieve_user_data`, {
+    //   fetch(`http://localhost:3000/synthrooms/${this.props.currentSynthroom.id}/retrieve_user_data`, {
     //     method: "POST"
     //   })
     // }
@@ -345,7 +345,7 @@ class Synthroom extends Component {
 
   savePatch = () => {
     if (this.props.allCurrentUsers[this.props.username].currentPatchSettings.id !== null) {
-      fetch(`http://192.168.4.168:3000/patches/${this.props.allCurrentUsers[this.props.username].currentPatchSettings.id}`, {
+      fetch(`http://localhost:3000/patches/${this.props.allCurrentUsers[this.props.username].currentPatchSettings.id}`, {
 				method: "PATCH",
 				headers: {
 					'Content-Type': 'application/json'
@@ -370,7 +370,7 @@ class Synthroom extends Component {
       case 'RETRIEVE_USER_DATA':
         //collect all other current user's name and patch state, & create their signal processing
         console.log('ABOUT TO RETRIEVE_USER_DATA');
-        fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/add_user`, {
+        fetch(`http://localhost:3000/synthrooms/${this.props.currentSynthroom.id}/add_user`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
@@ -592,7 +592,7 @@ class Synthroom extends Component {
 
   handleSendMessage = (messageInput) => {
     //send message to back end here
-    fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/add_message`, {
+    fetch(`http://localhost:3000/synthrooms/${this.props.currentSynthroom.id}/add_message`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -606,7 +606,7 @@ class Synthroom extends Component {
   }
 
   handleSendNotes = (key, frequency) => {
-    fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/send_notes`, {
+    fetch(`http://localhost:3000/synthrooms/${this.props.currentSynthroom.id}/send_notes`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -621,7 +621,7 @@ class Synthroom extends Component {
   }
 
   handleRemoveNotes = (key) => {
-    fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/remove_notes`, {
+    fetch(`http://localhost:3000/synthrooms/${this.props.currentSynthroom.id}/remove_notes`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -634,7 +634,7 @@ class Synthroom extends Component {
   }
 
   forceRemoveNotes = (key) => {
-    fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/force_remove_notes`, {
+    fetch(`http://localhost:3000/synthrooms/${this.props.currentSynthroom.id}/force_remove_notes`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -647,7 +647,7 @@ class Synthroom extends Component {
   }
 
   sendPatchUpdate = (username, synthParameter, value) => {
-    fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/update_patch`, {
+    fetch(`http://localhost:3000/synthrooms/${this.props.currentSynthroom.id}/update_patch`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -661,7 +661,7 @@ class Synthroom extends Component {
   }
 
   handlePatchLoad = (patch) => {
-    fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/load_patch`, {
+    fetch(`http://localhost:3000/synthrooms/${this.props.currentSynthroom.id}/load_patch`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -676,7 +676,7 @@ class Synthroom extends Component {
   getUsers = () => {
     if(this.props.allCurrentUsers[this.props.username] && (!this.props.allCurrentUsers[this.props.username].signalProcessing.oscillatorGainNode || !this.props.allCurrentUsers[this.props.username].signalProcessing.filterNode || !this.props.allCurrentUsers[this.props.username].signalProcessing.gainEnvelope || !this.props.allCurrentUsers[this.props.username].signalProcessing.filterEnvelope)){
       console.log('FETCHING FROM COMP WILL RECEIVE PROPS');
-      fetch(`http://192.168.4.168:3000/synthrooms/${this.props.currentSynthroom.id}/retrieve_user_data`, {
+      fetch(`http://localhost:3000/synthrooms/${this.props.currentSynthroom.id}/retrieve_user_data`, {
         method: "POST"
       })
       .then(() => {
