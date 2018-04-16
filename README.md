@@ -25,4 +25,4 @@ Create, load, update, or delete patches using the controls at the top of the syn
 
 ## Video Demo
 
-Click <a href="https://youtu.be/CJQ59-gyhKU" target="_blank">here</a> for a video demo of Behind the Music.
+Click <a href="https://youtu.be/CJQ59-gyhKU" target="_blank">here</a> for a video demo of Sympathizer.
